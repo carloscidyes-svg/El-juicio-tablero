@@ -269,7 +269,8 @@ function doc(id){const d=S[id]||{};if(d.s)return{req:!!d.req,s:d.s};
  if(d.ves||d.maq||d.mic){const f=scs(r)[0];if(f)o.s[f]={ves:d.ves||0,maq:d.maq||0,mic:d.mic||0,t:d.t||{}}}
  return o}
 const getU=(id,sid)=>{const u=doc(id).s[sid];return u?{...zu(),...u}:zu()};
-const luU=(r,sid)=>{const g=getU(r.id,sid),n=r.sc[sid],d=doc(r.id);return Math.min(n,g.ves,g.maq,d.req?g.mic:n)};
+const reqU=(id,sid)=>{const d=doc(id),u=d.s[sid];return u&&u.rq!=null?!!u.rq:!!d.req};
+const luU=(r,sid)=>{const g=getU(r.id,sid),n=r.sc[sid];return Math.min(n,g.ves,g.maq,reqU(r.id,sid)?g.mic:n)};
 const okU=(r,sid)=>luU(r,sid)>=r.sc[sid];
 const ro=()=>mode==='ro';
 const q={};
@@ -283,9 +284,11 @@ function write(id,obj){
 function act(id,sid,a){
  if(ro())return;const r=byId[id],d=JSON.parse(JSON.stringify(doc(id))),T=r.sc[sid],s=hhmm();
  const u=d.s[sid]=d.s[sid]?{...zu(),...d.s[sid]}:zu();u.t=u.t||{};
- if(a==='req'){d.req=!d.req;if(!d.req)Object.values(d.s).forEach(x=>{x.mic=0;delete x.t.mic})}
- else if(a==='all'){if(luU(r,sid)>=T){u.ves=0;u.maq=0;u.mic=0;u.t={}}else{u.ves=Math.max(u.ves,T);u.maq=Math.max(u.maq,T);u.t.ves=u.t.ves||s;u.t.maq=u.t.maq||s;if(d.req){u.mic=Math.max(u.mic,T);u.t.mic=u.t.mic||s}}}
- else if(a==='mic'&&u.mic>=T){d.req=false;Object.values(d.s).forEach(x=>{x.mic=0;delete x.t.mic})}
+ const off=x=>{x.mic=0;x.t=x.t||{};delete x.t.mic};
+ if(a==='req'){u.rq=!reqU(id,sid);if(!u.rq)off(u)}
+ else if(a==='reqall'){const ss=scs(r),on=!ss.every(x=>reqU(id,x));ss.forEach(x=>{const y=d.s[x]=d.s[x]?{...zu(),...d.s[x]}:zu();y.rq=on;if(!on)off(y)})}
+ else if(a==='all'){if(luU(r,sid)>=T){u.ves=0;u.maq=0;u.mic=0;u.t={}}else{u.ves=Math.max(u.ves,T);u.maq=Math.max(u.maq,T);u.t.ves=u.t.ves||s;u.t.maq=u.t.maq||s;if(reqU(id,sid)){u.mic=Math.max(u.mic,T);u.t.mic=u.t.mic||s}}}
+ else if(a==='mic'&&u.mic>=T){u.rq=false;off(u)}
  else{const n=u[a]||0;u[a]=n>=T?0:n+1;if(u[a]>0)u.t[a]=s;else delete u.t[a]}
  write(id,d);
 }
@@ -306,13 +309,13 @@ function toggleDone(sid){cfg={...cfg,done:{...(cfg.done||{})}};if(cfg.done[sid])
 function cell(r,sid,f){
  const g=getU(r.id,sid),n=g[f]||0,T=r.sc[sid],done=n>=T,dis=ro()?' disabled':'';
  const lab={ves:'Vestuario',maq:'Maq. / pelo',mic:'Micrófono'}[f];
- if(f==='mic'&&!doc(r.id).req)return `<button class="c na" data-a="req" data-id="${r.id}" data-sc="${sid}"${dis}><small>${lab}</small><b>N/A</b></button>`;
+ if(f==='mic'&&!reqU(r.id,sid))return `<button class="c na" data-a="req" data-id="${r.id}" data-sc="${sid}"${dis}><small>${lab}</small><b>N/A</b></button>`;
  const mark=T===1?(done?'✓':'○'):n+'/'+T;
  return `<button class="c ${f}${done?' on':''}" data-a="${f}" data-id="${r.id}" data-sc="${sid}" aria-pressed="${done}"${dis}><small>${lab}</small><b>${mark}</b></button>`;
 }
 function rdy(r,sid){
  const g=getU(r.id,sid),T=r.sc[sid],l=luU(r,sid),ok=l>=T,miss=[];
- if(g.ves<T)miss.push('vest.');if(g.maq<T)miss.push('maq.');if(doc(r.id).req&&g.mic<T)miss.push('mic');
+ if(g.ves<T)miss.push('vest.');if(g.maq<T)miss.push('maq.');if(reqU(r.id,sid)&&g.mic<T)miss.push('mic');
  const ts=Object.values(g.t).sort((a,b)=>m(b)-m(a))[0]||'';
  return `<button class="c rdy${ok?' on':''}" data-a="all" data-id="${r.id}" data-sc="${sid}" aria-pressed="${ok}"${ro()?' disabled':''}><small>Estado</small><b>${ok?'LISTO':(T>1?l+'/'+T:'falta')}</b><span>${ok?'':miss.join(' · ')}</span></button>`;
 }
@@ -322,7 +325,7 @@ function row(r,sid,inScene){
  const other=scs(r).filter(x=>x!==sid).length;
  const who=r.k==='t'?r.act:(r.qty>1?'Necesita '+T+' de '+r.qty+(wrapN(r)?' · '+wrapN(r)+' con wrap':''):'Extra');
  const head=`<span class="num">${r.k==='t'?r.n:T}</span><div><b>${r.name}</b><div class="who">${who}</div><div>${tag}</div></div>`;
- return `<div class="r${ok?' ok':''}"><div class="nm">${head}<button class="chip" data-a="req" data-id="${r.id}" data-sc="${sid}" aria-pressed="${!!doc(r.id).req}"${ro()?' disabled':''} title="Marcar si lleva micrófono">Mic</button></div>${cell(r,sid,'ves')}${cell(r,sid,'maq')}${cell(r,sid,'mic')}${rdy(r,sid)}</div>`;
+ return `<div class="r${ok?' ok':''}"><div class="nm">${head}<button class="chip" data-a="req" data-id="${r.id}" data-sc="${sid}" aria-pressed="${reqU(r.id,sid)}"${ro()?' disabled':''} title="Micrófono en esta escena">Mic</button></div>${cell(r,sid,'ves')}${cell(r,sid,'maq')}${cell(r,sid,'mic')}${rdy(r,sid)}</div>`;
 }
 function sceneStat(sid){const us=units().filter(u=>u.s===sid);let need=0,ok=0;us.forEach(u=>{need+=u.need;ok+=luU(u.r,sid)});return{need,ok,done:us.every(u=>okU(u.r,sid)),us}}
 function bank(){
@@ -335,7 +338,7 @@ function bank(){
 }
 const sqb=(r,sid,f)=>{const T=r.sc[sid],n=getU(r.id,sid)[f],done=n>=T,part=n>0&&!done,lab=f==='ves'?'V':f==='maq'?'M':'Mic';
  return `<button class="sq ${f==='ves'?'v':f==='maq'?'m':'x'}${done?' on':part?' part':''}" data-a="${f}" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''}>${done||T===1?lab:n+'/'+T}</button>`};
-const sqs=(r,sid)=>sqb(r,sid,'ves')+sqb(r,sid,'maq')+(doc(r.id).req?sqb(r,sid,'mic'):`<button class="sq x ghost" data-a="req" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''} title="Activar micrófono">Mic</button>`);
+const sqs=(r,sid)=>sqb(r,sid,'ves')+sqb(r,sid,'maq')+(reqU(r.id,sid)?sqb(r,sid,'mic'):`<button class="sq x ghost" data-a="req" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''} title="Activar micrófono">Mic</button>`);
 const stb=(r,sid)=>{const T=r.sc[sid],l=luU(r,sid),ok=l>=T;return `<button class="stt${ok?' okb':''}" data-a="all" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''}>${ok?'LISTO':(T>1?l+'/'+T:'falta')}</button>`};
 function wrLines(sid){return rows.filter(r=>isWr(r)&&r.scAll[sid]).map(r=>`<div class="ol cl"><span class="on1 sl"><b>${r.k==='t'?r.name:r.scAll[sid]+'× '+r.name}</b><small>${r.k==='t'?r.act:'Extras'}</small></span><span></span><span class="wtag">WRAP</span></div>`).join('')}
 function cgente(sid){
@@ -362,7 +365,7 @@ function talentos(k){
   const lines=list.length?list.map(sid=>{const sc=scenes.find(x=>x[0]===sid),ok=okU(r,sid);
    if(isDone(sid))return `<div class="ol cl"><span class="on1 sl"><b>Esc. ${sid}</b><small>${dfl(sid)} · ${sc[1]}</small></span><span></span><span class="stt" style="color:var(--ok)">CERRADA</span></div>`;
    return `<div class="ol${ok?' ok':''}"><button class="on1 nb sl" data-go="${sid}"><b>Esc. ${sid}</b><small>${dfl(sid)}${r.k==='x'&&r.qty>1?' · necesita '+r.sc[sid]+' de '+r.qty:''} · ${sc[1]}</small></button><span class="sqs">${sqs(r,sid)}</span>${stb(r,sid)}</div>`}).join(''):'<div class="empty">Todas listas ✓</div>';
-  return `<div class="tc${n===all.length?' ok':''}"><div class="tch">${hd}<div class="tcr"><b>${n}/${all.length}</b>${wc}${all0.length?`<button class="chip" data-a="req" data-id="${r.id}" data-sc="${all0[0]}" aria-pressed="${!!doc(r.id).req}"${ro()?' disabled':''} title="Marcar si lleva micrófono">Mic</button>`:''}</div></div>${lines}</div>`}).join('');
+  return `<div class="tc${n===all.length?' ok':''}"><div class="tch">${hd}<div class="tcr"><b>${n}/${all.length}</b>${wc}${all0.length?`<button class="chip" data-a="reqall" data-id="${r.id}" data-sc="${all0[0]}" aria-pressed="${all0.every(x=>reqU(r.id,x))}"${ro()?' disabled':''} title="Micrófono en todas sus escenas">Mic</button>`:''}</div></div>${lines}</div>`}).join('');
 }
 function legend(){return `<div class="lg"><b>Qué significan los colores</b><span><i class="sq v on">V</i> Vestuario listo</span><span><i class="sq m on">M</i> Maquillaje y peluquería listo</span><span><i class="sq x on">Mic</i> Micrófono listo (solo si lleva)</span><span><i class="sq v part">1/2</i> Avance parcial</span><span><i class="sq v">V</i> Pendiente</span><span><i class="lgo">LISTO</i> Todos los pasos hechos</span></div>`}
 function pendientes(){
@@ -373,7 +376,7 @@ function pendientes(){
   const falt=st.need-st.ok;
   return `<div class="pc"><h3>Esc. ${sid}<span>Faltan ${falt} de ${st.need} personas</span></h3>${head}`+bad.map(u=>{const g=getU(u.r.id,sid),T=u.need,d=doc(u.r.id),l=luU(u.r,sid);
    const t=(lab,n)=>lab+(T>1?' ('+n+' de '+T+')':'');
-   const miss=[g.ves<T?t('vestuario',g.ves):'',g.maq<T?t('maquillaje',g.maq):'',d.req&&g.mic<T?t('micrófono',g.mic):''].filter(Boolean).join(', ');
+   const miss=[g.ves<T?t('vestuario',g.ves):'',g.maq<T?t('maquillaje',g.maq):'',reqU(u.r.id,sid)&&g.mic<T?t('micrófono',g.mic):''].filter(Boolean).join(', ');
    return `<div class="pl2"><b>${u.r.name}${T>1?' · faltan '+(T-l)+' de '+T:''}</b><div class="pmiss">Falta: <span>${miss}</span></div></div>`}).join('')
    +(good.length?`<div class="pgood">Ya listos: ${good.map(u=>u.r.name).join(', ')}</div>`:'')+'</div>'}).join('')+(cl.length?`<div class="wrp"><b>Cerradas:</b> ${cl.join(' · ')}</div>`:'');
 }
@@ -382,7 +385,7 @@ function render(){
  const us=units().filter(u=>!isDone(u.s)),T=us.reduce((a,u)=>a+u.need,0),nc=scenes.filter(x=>isDone(x[0])).length;
  const sum=f=>us.reduce((a,u)=>a+Math.min(u.need,getU(u.r.id,u.s)[f]),0);
  const L=us.reduce((a,u)=>a+luU(u.r,u.s),0);
- const mu=us.filter(u=>doc(u.r.id).req),mt=mu.reduce((a,u)=>a+u.need,0),mn=mu.reduce((a,u)=>a+Math.min(u.need,getU(u.r.id,u.s).mic),0);
+ const mu=us.filter(u=>reqU(u.r.id,u.s)),mt=mu.reduce((a,u)=>a+u.need,0),mn=mu.reduce((a,u)=>a+Math.min(u.need,getU(u.r.id,u.s).mic),0);
  $('#keys').innerHTML=`<div class="key big"><b>${L} / ${T}</b><span>Listos (persona por escena)</span></div><div class="key"><b>${sum('ves')} / ${T}</b><span>Vestuario</span></div><div class="key"><b>${sum('maq')} / ${T}</b><span>Maq. y peluquería</span></div><div class="key"><b>${mt?mn+' / '+mt:'—'}</b><span>Micrófono${mt?'':' (ninguno activo)'}</span></div><div class="key"><b>${scenes.filter(s=>!isDone(s[0])&&sceneStat(s[0]).done).length} / ${scenes.length-nc}</b><span>Escenas listas</span></div><div class="key"><b>${nc} / ${scenes.length}</b><span>Escenas cerradas</span></div>`;
  $('#barf').style.width=(T?L/T*100:100)+'%';
 $('#srt').innerHTML=`<span>Ordenar por:</span><button class="sb${sortBy==='id'?' on':''}" data-sort="id">Número</button><button class="sb${sortBy==='name'?' on':''}" data-sort="name">Nombre</button>`;$('#mx').innerHTML=talentos('t');$('#mx2').innerHTML=talentos('x')||'<p class="who">Hoy no hay extras.</p>';
@@ -413,7 +416,7 @@ document.addEventListener('click',e=>{
  const st=e.target.closest('[data-nd]');if(st&&!ro()){const[id,kind,d]=st.dataset.nd.split(':');setCfg(id,kind,+d);return}
  if(e.target.closest('#pend')){onlyP=!onlyP;render();return}
  if(e.target.closest('#reset')&&!ro()){if(!armed){armed=true;render();setTimeout(()=>{armed=false;render()},5000);return}
-  armed=false;rows.forEach(r=>{const d=doc(r.id);if(Object.keys(d.s).length||S[r.id])write(r.id,{req:d.req,s:{}})});render()}
+  armed=false;rows.forEach(r=>{const d=doc(r.id);if(Object.keys(d.s).length||S[r.id])write(r.id,{req:d.req,s:Object.fromEntries(Object.entries(d.s).filter(e=>e[1]&&e[1].rq!=null).map(e=>[e[0],{ves:0,maq:0,mic:0,t:{},rq:e[1].rq}]))})});render()}
 });
 const route=()=>{const h=location.hash.slice(1),v={talentos:'m',todos:'m',matriz:'m',escenas:'e',banco:'b',ajustes:'b'}[h]||'r';
  ['r','m','e','b'].forEach(k=>{$('#v-'+k).classList.toggle('on',k===v);$('#t-'+k).setAttribute('aria-current',k===v?'page':'false')});
