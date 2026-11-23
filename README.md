@@ -39,3 +39,9 @@ Fuera de Claude la página usa Firebase Realtime Database (proyecto `el-juicio-t
 
 - Los datos de la versión en Claude y los de Firebase son separados: el equipo debe usar un solo enlace (el de GitHub Pages).
 - Las reglas de la base de datos están abiertas para lectura y escritura: cualquiera con el enlace puede marcar. Para cerrar el acceso después del rodaje, cambia las reglas en la consola de Firebase.
+
+## Escenas cerradas y wrap
+
+- **Cerrar escena**: botón al final de cada tarjeta en Resumen y arriba en «Por escena». La escena pasa al final, atenuada, y deja de contar en totales y pendientes. Se puede reabrir.
+- **Wrap**: en la pestaña Talentos. Los talentos tienen un botón «Wrap»; los extras tienen un contador (por ejemplo, 3 de 5 con wrap). Quien tiene wrap deja de contar en las escenas, y el Resumen lista quién ya hizo wrap.
+- Ambos se guardan en `cfg/ajustes` (`done` y `wrap`) y se comparten en tiempo real.
