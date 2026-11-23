@@ -320,7 +320,7 @@ function row(r,sid,inScene){
  const ok=okU(r,sid),T=r.sc[sid];
  const tag=inScene==='hide'?'':inScene?`<span class="eb">Esc. ${sid}</span>`:`<button class="eb go" data-go="${sid}" title="Ver escena ${sid}">Esc. ${sid}</button>`;
  const other=scs(r).filter(x=>x!==sid).length;
- const who=r.k==='t'?r.act:(r.qty>1?'Necesita '+T+' de '+r.qty:'Extra');
+ const who=r.k==='t'?r.act:(r.qty>1?'Necesita '+T+' de '+r.qty+(wrapN(r)?' · '+wrapN(r)+' con wrap':''):'Extra');
  const head=`<span class="num">${r.k==='t'?r.n:T}</span><div><b>${r.name}</b><div class="who">${who}</div><div>${tag}</div></div>`;
  return `<div class="r${ok?' ok':''}"><div class="nm">${head}<button class="chip" data-a="req" data-id="${r.id}" data-sc="${sid}" aria-pressed="${!!doc(r.id).req}"${ro()?' disabled':''} title="Marcar si lleva micrófono">Mic</button></div>${cell(r,sid,'ves')}${cell(r,sid,'maq')}${cell(r,sid,'mic')}${rdy(r,sid)}</div>`;
 }
@@ -336,6 +336,7 @@ const sqb=(r,sid,f)=>{const T=r.sc[sid],n=getU(r.id,sid)[f],done=n>=T,part=n>0&&
  return `<button class="sq ${f==='ves'?'v':f==='maq'?'m':'x'}${done?' on':part?' part':''}" data-a="${f}" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''}>${done||T===1?lab:n+'/'+T}</button>`};
 const sqs=(r,sid)=>sqb(r,sid,'ves')+sqb(r,sid,'maq')+(doc(r.id).req?sqb(r,sid,'mic'):`<button class="sq x ghost" data-a="req" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''} title="Activar micrófono">Mic</button>`);
 const stb=(r,sid)=>{const T=r.sc[sid],l=luU(r,sid),ok=l>=T;return `<button class="stt${ok?' okb':''}" data-a="all" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''}>${ok?'LISTO':(T>1?l+'/'+T:'falta')}</button>`};
+function wrLines(sid){return rows.filter(r=>isWr(r)&&r.scAll[sid]).map(r=>`<div class="ol cl"><span class="on1 sl"><b>${r.k==='t'?r.name:r.scAll[sid]+'× '+r.name}</b><small>${r.k==='t'?r.act:'Extras'}</small></span><span></span><span class="wtag">WRAP</span></div>`).join('')}
 function wrapStrip(){
  const w=rows.filter(r=>wrapN(r)>0).map(r=>r.k==='t'?r.name+' ('+r.act+')':r.name+' ('+wrapN(r)+' de '+r.qty+')');
  return w.length?`<div class="wrp"><b>WRAP:</b> ${w.join(' · ')}</div>`:''}
@@ -344,7 +345,7 @@ function overview(){
   const lines=us.map(u=>{const r=u.r,ok=okU(r,sid);
    return `<div class="ol${ok?' ok':''}"><button class="on1 nb" data-go="${sid}"><em>${r.k==='t'?r.n:u.need+'×'}</em>${r.name}</button><span class="sqs">${sqs(r,sid)}</span>${stb(r,sid)}</div>`}).join('');
   if(isDone(sid))return `<div class="oc2 closed"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">CERRADA ✓</span></button><button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Reabrir escena</button></div>`;
-  return `<div class="oc2${st.done?' ok':''}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn">${st.done?'LISTA ✓':st.ok+'/'+st.need}</span><i style="width:${p}%"></i></button>${lines}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Cerrar escena</button></div>`}).join('');
+  return `<div class="oc2${st.done?' ok':''}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn">${st.done?'LISTA ✓':st.ok+'/'+st.need}</span><i style="width:${p}%"></i></button>${lines}${wrLines(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Cerrar escena</button></div>`}).join('');
 }
 function talentos(k){
  return rows.filter(r=>r.k===k).map(r=>{
@@ -386,7 +387,7 @@ $('#mx').innerHTML=talentos('t');$('#mx2').innerHTML=talentos('x');
  const sc=scenes.find(s=>s[0]===sel),st=sceneStat(sel);
  const rs=st.us.filter(u=>!onlyP||!okU(u.r,sel));
  const falta=st.us.filter(u=>!okU(u.r,sel)).map(u=>u.r.name+(u.need>1?' ('+(u.need-luU(u.r,sel))+')':''));
- $('#panel').innerHTML=`<div class="ph"><div><h2>Escena ${sc[0]}</h2><div class="who">${sc[1]} · <b class="dfb">${dfl(sc[0])}</b></div></div><div class="verdict${st.done?' ok':''}">${st.done?'ESCENA LISTA ✓':'Faltan '+(st.need-st.ok)+' de '+st.need}</div></div><button class="cbtn" data-dn="${sc[0]}"${ro()?' disabled':''}>${isDone(sc[0])?'Reabrir escena (está cerrada)':'Cerrar escena'}</button><p class="syn">${sc[2]}</p>${falta.length?`<p class="falta">Falta: ${falta.join(' · ')}</p>`:''}${rs.length?rs.map(u=>row(u.r,sel,true)).join(''):'<div class="empty">Todos listos ✓</div>'}`;
+ $('#panel').innerHTML=`<div class="ph"><div><h2>Escena ${sc[0]}</h2><div class="who">${sc[1]} · <b class="dfb">${dfl(sc[0])}</b></div></div><div class="verdict${st.done?' ok':''}">${st.done?'ESCENA LISTA ✓':'Faltan '+(st.need-st.ok)+' de '+st.need}</div></div><button class="cbtn" data-dn="${sc[0]}"${ro()?' disabled':''}>${isDone(sc[0])?'Reabrir escena (está cerrada)':'Cerrar escena'}</button><p class="syn">${sc[2]}</p>${falta.length?`<p class="falta">Falta: ${falta.join(' · ')}</p>`:''}${rs.length?rs.map(u=>row(u.r,sel,true)).join(''):'<div class="empty">Todos listos ✓</div>'}${wrLines(sel)}`;
  $('#ov').innerHTML=overview();$('#lg1').innerHTML=legend();$('#lg2').innerHTML=legend();$('#pend2').innerHTML=pendientes();
  $('#bpills').innerHTML=scenes.map(x=>`<button class="pill${bsel===x[0]?' sel':''}" data-bpick="${x[0]}"><b>${x[0]}</b><span>${rows.filter(r=>r.k==="x").reduce((a,r)=>a+(r.scAll[x[0]]||0),0)} extras</span></button>`).join('');
  $('#bank').innerHTML=bank();
