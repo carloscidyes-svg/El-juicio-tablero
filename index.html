@@ -184,9 +184,6 @@ button.stt.okb{color:var(--ok)}
 .tc.cp{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:6px 10px;background:var(--soft)}
 .tc.cp .num{font-size:20px}.cpn b{font-size:15px;display:block;line-height:1.15}.cpn small{font-size:12px;color:var(--mute)}
 .tc.cp .wb{min-height:36px;padding:0 10px;font-size:13px}
-.stb3{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule)}
-.stb3 button{min-height:44px;border:0;border-right:1px solid var(--rule);background:var(--bg);color:var(--mute);font:inherit;font-weight:700;font-size:13px;cursor:pointer}.stb3 button:last-child{border-right:0}
-#v-r .stb3{margin:0}.gtxt{width:100%;font:inherit;font-size:14px;line-height:1.4;border:1.5px solid var(--rule);border-radius:10px;padding:10px;background:var(--bg);color:var(--ink);box-sizing:border-box}
 </style>
 </head>
 <body>
@@ -202,7 +199,7 @@ button.stt.okb{color:var(--ok)}
 <button class="tg" id="pend" aria-pressed="false">Solo pendientes</button>
 </div></nav>
 <main class="band"><div class="wrap">
-<section class="view" id="v-r"><h2 style="margin-top:6px">Todo el día de un vistazo</h2><p class="who" style="margin:0 0 8px">Una tarjeta por escena con todas las personas que salen en ella. Toca una escena o una persona para abrirla.</p><div class="lgw" id="lg1"></div><div class="ovg" id="ov"></div><h2>Resumen para el grupo</h2><p class="who" style="margin:0 0 8px">Texto listo para pegar en WhatsApp. Se actualiza solo.</p><textarea id="gtxt" class="gtxt" readonly rows="10"></textarea><button class="cbtn" id="gcopy" style="margin-top:8px">Copiar texto</button></section>
+<section class="view" id="v-r"><h2 style="margin-top:6px">Todo el día de un vistazo</h2><p class="who" style="margin:0 0 8px">Una tarjeta por escena con todas las personas que salen en ella. Toca una escena o una persona para abrirla.</p><div class="lgw" id="lg1"></div><div class="ovg" id="ov"></div></section>
 <section class="view" id="v-b"><h2 style="margin-top:6px">Orden de las escenas</h2><p class="who" style="margin:0 0 8px">Mueve una escena con las flechas. Cambia el orden en todas las pestañas y se guarda para todos.</p><div id="ord"></div><h2 style="margin-top:32px">Banco de extras</h2><p class="who" style="margin:0 0 10px">Elige la escena y cambia cuántos extras necesitas de cada rol (0 = no sale) y cuántos tienes en set. Se guarda para todos.</p><div class="pills" id="bpills"></div><div id="bank"></div></section>
 <section class="view" id="v-m"><h2 style="margin-top:6px">Talentos y extras: todas sus escenas</h2><p class="who" style="margin:0 0 4px">Cada cuadro es un talento o un rol de extras con las escenas en las que sale. Marca vestuario (V), maquillaje (M) y micrófono (Mic) por escena.</p><div id="lg2"></div><div class="srt" id="srt"></div><h2 style="margin:12px 0 0">Talentos</h2><div class="tgrid" id="mx"></div><h2 style="margin:28px 0 0">Extras</h2><div class="tgrid" id="mx2"></div></section>
 <section class="view" id="v-e"><div class="pills" id="pills"></div><div class="panel" id="panel"></div></section>
@@ -315,10 +312,7 @@ function setCfg(id,kind,d){const r=byId[id];cfg={...cfg,need:{...(cfg.need||{})}
  saveCfg()}
 function setWrap(id,d){const r=byId[id];if(!r)return;const v=Math.max(0,Math.min(r.qty,wrapN(r)+d));
  cfg={...cfg,wrap:{...(cfg.wrap||{})}};if(v>0)cfg.wrap[id]=v;else delete cfg.wrap[id];saveCfg()}
-const ICON={1:'✅',2:'❌',3:'🔼'},LAB={1:'CERRADA',2:'CANCELADA',3:'SE MUEVE'};
-const stOf=sid=>(cfg.done&&cfg.done[sid])||0;
-function toggleDone(sid,code){cfg={...cfg,done:{...(cfg.done||{})}};if(!code||cfg.done[sid]===code)delete cfg.done[sid];else cfg.done[sid]=code;saveCfg()}
-const stBtns=sid=>ro()?'':`<div class="stb3"><button data-dn="${sid}:1">✅ Cerrar</button><button data-dn="${sid}:2">❌ Cancelar</button><button data-dn="${sid}:3">🔼 Mover</button></div>`;
+function toggleDone(sid){cfg={...cfg,done:{...(cfg.done||{})}};if(cfg.done[sid])delete cfg.done[sid];else cfg.done[sid]=1;saveCfg()}
 /* ---- piezas ---- */
 function cell(r,sid,f){
  const g=getU(r.id,sid),n=g[f]||0,T=r.sc[sid],done=n>=T,dis=ro()?' disabled':'';
@@ -357,11 +351,6 @@ function wrLines(sid){return rows.filter(r=>isWr(r)&&r.scAll[sid]).map(r=>`<div 
 function cgente(sid){
  const rs=rows.filter(r=>r.scAll[sid]),t=rs.filter(r=>r.k==='t').map(r=>r.name+' ('+r.act+')'+(isWr(r)?' · WRAP':'')),x=rs.filter(r=>r.k==='x').map(r=>r.scAll[sid]+'× '+r.name);
  return `<div class="cg"><div><b>Talentos:</b> ${t.join(' · ')||'—'}</div>${x.length?`<div><b>Extras:</b> ${x.join(' · ')}</div>`:''}</div>`}
-function grupoTxt(){
- const used=new Set(),ln=scenes.map(x=>{const c=stOf(x[0]);if(c)used.add(c);return 'Esc. '+x[0]+(c?' '+ICON[c]:'')});
- const leg=[[1,'Terminada / Cerrada'],[2,'Cancelada'],[3,'Se mueve para otro día']].filter(a=>used.has(a[0])).map(a=>ICON[a[0]]+' '+a[1]);
- const w=rows.filter(r=>wrapN(r)>0).map(r=>'• '+r.name+(r.k==='t'?' ('+r.act+')':' ('+wrapN(r)+' de '+r.qty+')'));
- return 'EL JUICIO · Día 12 · Lunes 23.11.26\n\n'+ln.join('\n')+(leg.length?'\n\n'+leg.join('\n'):'')+'\n\nPersonajes wrapeados:\n'+(w.length?w.join('\n'):'Ninguno')}
 function wrapStrip(){
  const w=rows.filter(r=>wrapN(r)>0).map(r=>r.k==='t'?r.name+' ('+r.act+')':r.name+' ('+wrapN(r)+' de '+r.qty+')');
  return w.length?`<div class="wrp"><b>WRAP:</b> ${w.join(' · ')}</div>`:''}
@@ -369,8 +358,8 @@ function overview(){
  return wrapStrip()+vsc().map(sc=>{const sid=sc[0],st=sceneStat(sid),p=pct(st),us=st.us.slice().sort((a,b)=>(a.r.k==='t'?0:1)-(b.r.k==='t'?0:1));
   const lines=us.map(u=>{const r=u.r,ok=okU(r,sid);
    return `<div class="ol${ok?' ok':''}"><button class="on1 nb" data-go="${sid}"><em>${r.k==='t'?r.n:u.need+'×'}</em>${r.name}</button><span class="sqs">${sqs(r,sid)}</span>${stb(r,sid)}</div>`}).join('');
-  if(isDone(sid))return `<div class="oc2 closed"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--${stOf(sid)===1?'ok':'ink'})">${LAB[stOf(sid)]} ${ICON[stOf(sid)]}</span></button>${cgente(sid)}<button class="clb" data-dn="${sid}:0"${ro()?' disabled':''}>Reabrir escena</button></div>`;
-  return `<div class="oc2${st.done?' ok':''}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn">${st.done?'LISTA ✓':st.ok+'/'+st.need}</span><i style="width:${p}%"></i></button>${lines}${wrLines(sid)}${stBtns(sid)}</div>`}).join('');
+  if(isDone(sid))return `<div class="oc2 closed"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">CERRADA ✓</span></button>${cgente(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Reabrir escena</button></div>`;
+  return `<div class="oc2${st.done?' ok':''}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn">${st.done?'LISTA ✓':st.ok+'/'+st.need}</span><i style="width:${p}%"></i></button>${lines}${wrLines(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Cerrar escena</button></div>`}).join('');
 }
 function talentos(k){
  return rows.filter(r=>r.k===k).sort((a,b)=>(isWr(b)?1:0)-(isWr(a)?1:0)||(sortBy==='name'?a.name.localeCompare(b.name,'es'):(a.k==='t'?a.n-b.n:rows.indexOf(a)-rows.indexOf(b)))).map(r=>{
@@ -381,7 +370,7 @@ function talentos(k){
    return `<div class="tc wrap cp"><span class="num">${r.k==='t'?r.n:r.qty+'×'}</span><div class="cpn"><b>${r.name}</b><small>${r.k==='t'?r.act+' · ':''}Esc. ${ss.join(', ')||'—'}</small></div><span class="wtag">WRAP</span>${wc}</div>`}
   const all0=scs(r),all=all0.filter(x=>!isDone(x)),n=all.filter(x=>okU(r,x)).length,list=all0.filter(x=>isDone(x)||!onlyP||!okU(r,x)).sort((a,b)=>(isDone(a)?1:0)-(isDone(b)?1:0));
   const lines=list.length?list.map(sid=>{const sc=scenes.find(x=>x[0]===sid),ok=okU(r,sid);
-   if(isDone(sid))return `<div class="ol cl"><span class="on1 sl"><b>Esc. ${sid}</b><small>${dfl(sid)} · ${sc[1]}</small></span><span></span><span class="stt" style="color:var(--ink)">${ICON[stOf(sid)]} ${LAB[stOf(sid)]}</span></div>`;
+   if(isDone(sid))return `<div class="ol cl"><span class="on1 sl"><b>Esc. ${sid}</b><small>${dfl(sid)} · ${sc[1]}</small></span><span></span><span class="stt" style="color:var(--ok)">CERRADA</span></div>`;
    return `<div class="ol${ok?' ok':''}"><button class="on1 nb sl" data-go="${sid}"><b>Esc. ${sid}</b><small>${dfl(sid)}${r.k==='x'&&r.qty>1?' · necesita '+r.sc[sid]+' de '+r.qty:''} · ${sc[1]}</small></button><span class="sqs">${sqs(r,sid)}</span>${stb(r,sid)}</div>`}).join(''):'<div class="empty">Todas listas ✓</div>';
   return `<div class="tc${n===all.length?' ok':''}"><div class="tch">${hd}<div class="tcr"><b>${n}/${all.length}</b>${wc}${all0.length?`<button class="chip" data-a="req" data-id="${r.id}" data-sc="${all0[0]}" aria-pressed="${!!doc(r.id).req}"${ro()?' disabled':''} title="Marcar si lleva micrófono">Mic</button>`:''}</div></div>${lines}</div>`}).join('');
 }
@@ -404,16 +393,16 @@ function render(){
  const sum=f=>us.reduce((a,u)=>a+Math.min(u.need,getU(u.r.id,u.s)[f]),0);
  const L=us.reduce((a,u)=>a+luU(u.r,u.s),0);
  const mu=us.filter(u=>doc(u.r.id).req),mt=mu.reduce((a,u)=>a+u.need,0),mn=mu.reduce((a,u)=>a+Math.min(u.need,getU(u.r.id,u.s).mic),0);
- $('#keys').innerHTML=`<div class="key big"><b>${L} / ${T}</b><span>Listos (persona por escena)</span></div><div class="key"><b>${sum('ves')} / ${T}</b><span>Vestuario</span></div><div class="key"><b>${sum('maq')} / ${T}</b><span>Maq. y peluquería</span></div><div class="key"><b>${mt?mn+' / '+mt:'—'}</b><span>Micrófono${mt?'':' (ninguno activo)'}</span></div><div class="key"><b>${scenes.filter(s=>!isDone(s[0])&&sceneStat(s[0]).done).length} / ${scenes.length-nc}</b><span>Escenas listas</span></div><div class="key"><b>${nc} / ${scenes.length}</b><span>Escenas cerradas / canc. / movidas</span></div>`;
+ $('#keys').innerHTML=`<div class="key big"><b>${L} / ${T}</b><span>Listos (persona por escena)</span></div><div class="key"><b>${sum('ves')} / ${T}</b><span>Vestuario</span></div><div class="key"><b>${sum('maq')} / ${T}</b><span>Maq. y peluquería</span></div><div class="key"><b>${mt?mn+' / '+mt:'—'}</b><span>Micrófono${mt?'':' (ninguno activo)'}</span></div><div class="key"><b>${scenes.filter(s=>!isDone(s[0])&&sceneStat(s[0]).done).length} / ${scenes.length-nc}</b><span>Escenas listas</span></div><div class="key"><b>${nc} / ${scenes.length}</b><span>Escenas cerradas</span></div>`;
  $('#barf').style.width=(T?L/T*100:100)+'%';
 $('#srt').innerHTML=`<span>Ordenar por:</span><button class="sb${sortBy==='id'?' on':''}" data-sort="id">Número</button><button class="sb${sortBy==='name'?' on':''}" data-sort="name">Nombre</button>`;$('#mx').innerHTML=talentos('t');$('#mx2').innerHTML=talentos('x');
  $('#pills').innerHTML=vsc().map(s=>{const st=sceneStat(s[0]),p=pct(st),cd=isDone(s[0]);
-   return `<button class="pill${st.done?' ok':''}${cd?' cl':''}${sel===s[0]?' sel':''}" data-pick="${s[0]}" style="background:linear-gradient(90deg,color-mix(in srgb,var(--ok) 30%,transparent) ${p}%,transparent ${p}%)"><b>${s[0]}</b><span>${cd?ICON[stOf(s[0])]+' '+LAB[stOf(s[0])]:st.done?'LISTA':st.ok+'/'+st.need}</span><small class="pdf">${dfl(s[0])}</small></button>`}).join('');
+   return `<button class="pill${st.done?' ok':''}${cd?' cl':''}${sel===s[0]?' sel':''}" data-pick="${s[0]}" style="background:linear-gradient(90deg,color-mix(in srgb,var(--ok) 30%,transparent) ${p}%,transparent ${p}%)"><b>${s[0]}</b><span>${cd?'CERRADA':st.done?'LISTA':st.ok+'/'+st.need}</span><small class="pdf">${dfl(s[0])}</small></button>`}).join('');
  const sc=scenes.find(s=>s[0]===sel),st=sceneStat(sel);
  const rs=st.us.filter(u=>!onlyP||!okU(u.r,sel));
  const falta=st.us.filter(u=>!okU(u.r,sel)).map(u=>u.r.name+(u.need>1?' ('+(u.need-luU(u.r,sel))+')':''));
- $('#panel').innerHTML=`<div class="ph"><div><h2>Escena ${sc[0]}</h2><div class="who">${sc[1]} · <b class="dfb">${dfl(sc[0])}</b></div></div><div class="verdict${st.done?' ok':''}">${st.done?'ESCENA LISTA ✓':'Faltan '+(st.need-st.ok)+' de '+st.need}</div></div>${isDone(sc[0])?`<p class="falta" style="margin:0 0 8px">${ICON[stOf(sc[0])]} ${LAB[stOf(sc[0])]}</p><button class="cbtn" data-dn="${sc[0]}:0"${ro()?' disabled':''}>Reabrir escena</button>`:stBtns(sc[0])}<p class="syn">${sc[2]}</p>${falta.length?`<p class="falta">Falta: ${falta.join(' · ')}</p>`:''}${rs.length?rs.map(u=>row(u.r,sel,true)).join(''):'<div class="empty">Todos listos ✓</div>'}${wrLines(sel)}`;
- $('#ov').innerHTML=overview();$('#gtxt').value=grupoTxt();$('#lg1').innerHTML=legend();$('#lg2').innerHTML=legend();
+ $('#panel').innerHTML=`<div class="ph"><div><h2>Escena ${sc[0]}</h2><div class="who">${sc[1]} · <b class="dfb">${dfl(sc[0])}</b></div></div><div class="verdict${st.done?' ok':''}">${st.done?'ESCENA LISTA ✓':'Faltan '+(st.need-st.ok)+' de '+st.need}</div></div><button class="cbtn" data-dn="${sc[0]}"${ro()?' disabled':''}>${isDone(sc[0])?'Reabrir escena (está cerrada)':'Cerrar escena'}</button><p class="syn">${sc[2]}</p>${falta.length?`<p class="falta">Falta: ${falta.join(' · ')}</p>`:''}${rs.length?rs.map(u=>row(u.r,sel,true)).join(''):'<div class="empty">Todos listos ✓</div>'}${wrLines(sel)}`;
+ $('#ov').innerHTML=overview();$('#lg1').innerHTML=legend();$('#lg2').innerHTML=legend();
  $('#bpills').innerHTML=scenes.map(x=>`<button class="pill${bsel===x[0]?' sel':''}" data-bpick="${x[0]}"><b>${x[0]}</b><span>${rows.filter(r=>r.k==="x").reduce((a,r)=>a+(r.scAll[x[0]]||0),0)} extras</span></button>`).join('');
  $('#bank').innerHTML=bank();
  $('#ord').innerHTML=ro()?'<p class="who">Solo lectura.</p>':scenes.map((x,i)=>`<div class="od"><span class="on">${i+1}</span><div class="ot"><b>Escena ${x[0]}</b><small>${dfl(x[0])} · ${x[1]}</small></div><button class="mv" data-mv="${x[0]}:-1" aria-label="Subir"${i===0?' disabled':''}>▲</button><button class="mv" data-mv="${x[0]}:1" aria-label="Bajar"${i===scenes.length-1?' disabled':''}>▼</button></div>`).join('')+'<button class="foot-b" data-mv="reset">Volver al orden original</button>';
@@ -425,11 +414,8 @@ $('#srt').innerHTML=`<span>Ordenar por:</span><button class="sb${sortBy==='id'?'
 document.addEventListener('click',e=>{
  const go=e.target.closest('[data-go]');if(go){sel=go.dataset.go;location.hash='escenas';render();window.scrollTo({top:0});return}
  const mv=e.target.closest('[data-mv]');if(mv&&!ro()&&!mv.disabled){if(mv.dataset.mv==='reset')resetOrder();else{const[id,d]=mv.dataset.mv.split(':');moveScene(id,+d)}return}
- if(e.target.closest('#gcopy')){const t=$('#gtxt'),bt=$('#gcopy'),ok=()=>{bt.textContent='Copiado ✓';setTimeout(()=>{bt.textContent='Copiar texto'},2000)};
-  const fb=()=>{t.focus();t.select();try{document.execCommand('copy')&&ok()}catch(x){}};
-  try{navigator.clipboard.writeText(t.value).then(ok,fb)}catch(x){fb()}return}
  const so=e.target.closest('[data-sort]');if(so){sortBy=so.dataset.sort;render();return}
- const dn=e.target.closest('[data-dn]');if(dn&&!ro()&&!dn.disabled){const[a,c]=dn.dataset.dn.split(':');toggleDone(a,+c);return}
+ const dn=e.target.closest('[data-dn]');if(dn&&!ro()&&!dn.disabled){toggleDone(dn.dataset.dn);return}
  const wr=e.target.closest('[data-wr]');if(wr&&!ro()&&!wr.disabled){const[id,d]=wr.dataset.wr.split(':');setWrap(id,+d);return}
  const bp=e.target.closest('[data-bpick]');if(bp){bsel=bp.dataset.bpick;render();return}
  const sp=e.target.closest('[data-pick]');if(sp){sel=sp.dataset.pick;render();return}
