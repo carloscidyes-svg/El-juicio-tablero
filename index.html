@@ -299,6 +299,7 @@ function act(id,sid,a){
  const u=d.s[sid]=d.s[sid]?{...zu(),...d.s[sid]}:zu();u.t=u.t||{};
  if(a==='req'){d.req=!d.req;if(!d.req)Object.values(d.s).forEach(x=>{x.mic=0;delete x.t.mic})}
  else if(a==='all'){if(luU(r,sid)>=T){u.ves=0;u.maq=0;u.mic=0;u.t={}}else{u.ves=Math.max(u.ves,T);u.maq=Math.max(u.maq,T);u.t.ves=u.t.ves||s;u.t.maq=u.t.maq||s;if(d.req){u.mic=Math.max(u.mic,T);u.t.mic=u.t.mic||s}}}
+ else if(a==='mic'&&u.mic>=T){d.req=false;Object.values(d.s).forEach(x=>{x.mic=0;delete x.t.mic})}
  else{const n=u[a]||0;u[a]=n>=T?0:n+1;if(u[a]>0)u.t[a]=s;else delete u.t[a]}
  write(id,d);
 }
@@ -347,7 +348,7 @@ function bank(){
 }
 const sqb=(r,sid,f)=>{const T=r.sc[sid],n=getU(r.id,sid)[f],done=n>=T,part=n>0&&!done,lab=f==='ves'?'V':f==='maq'?'M':'Mic';
  return `<button class="sq ${f==='ves'?'v':f==='maq'?'m':'x'}${done?' on':part?' part':''}" data-a="${f}" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''}>${done||T===1?lab:n+'/'+T}</button>`};
-const sqs=(r,sid)=>sqb(r,sid,'ves')+sqb(r,sid,'maq')+(doc(r.id).req?`<span class="mw">${sqb(r,sid,'mic')}${ro()?'':`<button class="mxx" data-a="req" data-id="${r.id}" data-sc="${sid}" aria-label="Quitar micrófono" title="Quitar micrófono">×</button>`}</span>`:`<button class="sq x ghost" data-a="req" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''} title="Activar micrófono">Mic</button>`);
+const sqs=(r,sid)=>sqb(r,sid,'ves')+sqb(r,sid,'maq')+(doc(r.id).req?sqb(r,sid,'mic'):`<button class="sq x ghost" data-a="req" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''} title="Activar micrófono">Mic</button>`);
 const stb=(r,sid)=>{const T=r.sc[sid],l=luU(r,sid),ok=l>=T;return `<button class="stt${ok?' okb':''}" data-a="all" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''}>${ok?'LISTO':(T>1?l+'/'+T:'falta')}</button>`};
 function wrLines(sid){return rows.filter(r=>isWr(r)&&r.scAll[sid]).map(r=>`<div class="ol cl"><span class="on1 sl"><b>${r.k==='t'?r.name:r.scAll[sid]+'× '+r.name}</b><small>${r.k==='t'?r.act:'Extras'}</small></span><span></span><span class="wtag">WRAP</span></div>`).join('')}
 function cgente(sid){
