@@ -33,10 +33,9 @@ Ojo: GitHub Pages desde un repositorio privado necesita un plan de GitHub que lo
 - Para colaborar, agrega a las personas en **Settings → Collaborators**.
 - Los datos del plan (escenas, personajes, extras, horas) están al principio del script, bajo el comentario `datos del llamado`. Para un día nuevo, solo se cambian esas listas.
 
-## Importante: las marcas no se comparten desde GitHub Pages
+## Marcas compartidas (Firebase)
 
-La versión que se publicó en Claude guarda las marcas en una base de datos compartida que solo existe dentro de Claude. Fuera de Claude, la página usa `localStorage`: **cada teléfono ve y guarda solo sus propias marcas**, y nadie ve lo que marcan los demás.
+Fuera de Claude la página usa Firebase Realtime Database (proyecto `el-juicio-tablero`, datos en `tablero/d12`). Todos los que abran el enlace de GitHub Pages ven las marcas en tiempo real; el indicador dice «En vivo · compartido». Si Firebase no responde, la página cae a `localStorage` y dice «Solo en este teléfono».
 
-Para tener marcas compartidas en tiempo real fuera de Claude hace falta conectar un servicio de datos (por ejemplo Firebase o Supabase) y cambiar las funciones `write`, `saveCfg` y la sección `conexión compartida` del script. Esas tres partes son las únicas que tocan el almacenamiento.
-
-Mientras tanto, para marcar en equipo y en vivo, usa la versión de Claude (https://claude.ai/artifact/3SCfGsZfAJ4A8sUGMcYL4H) y deja GitHub para versionar el código y publicar la copia web.
+- Los datos de la versión en Claude y los de Firebase son separados: el equipo debe usar un solo enlace (el de GitHub Pages).
+- Las reglas de la base de datos están abiertas para lectura y escritura: cualquiera con el enlace puede marcar. Para cerrar el acceso después del rodaje, cambia las reglas en la consola de Firebase.

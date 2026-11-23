@@ -181,6 +181,17 @@ button.stt.okb{color:var(--ok)}
 <script>
 {
 const $=s=>document.querySelector(s);
+/* Firebase (solo se usa fuera de Claude, por ejemplo en GitHub Pages) */
+const FB={apiKey:"AIzaSyDkLYWhvw0a3bbpNK1uw4WURKs7vu8nTvY",authDomain:"el-juicio-tablero.firebaseapp.com",databaseURL:"https://el-juicio-tablero-default-rtdb.firebaseio.com",projectId:"el-juicio-tablero",storageBucket:"el-juicio-tablero.firebasestorage.app",messagingSenderId:"994916945746",appId:"1:994916945746:web:ca66592afbeadd47f8b48b"};
+const FB_BASE='https://www.gstatic.com/firebasejs/13.4.0/',FB_ROOT='tablero/d12/';
+async function fbDb(){
+ const {initializeApp}=await import(FB_BASE+'firebase-app.js');
+ const {getDatabase,ref,onValue,set}=await import(FB_BASE+'firebase-database.js');
+ const dbx=getDatabase(initializeApp(FB));
+ return{
+  doc:p=>({set:o=>set(ref(dbx,FB_ROOT+p),o),onSnapshot:(next,err)=>onValue(ref(dbx,FB_ROOT+p),sn=>next({exists:sn.exists(),data:()=>sn.val()}),err)}),
+  collection:p=>({onSnapshot:(next,err)=>onValue(ref(dbx,FB_ROOT+p),sn=>{const docs=[];sn.forEach(c=>{docs.push({id:c.key,data:()=>c.val()})});next({docs,metadata:{fromCache:false}})},err)})
+ }}
 const m=s=>{const[h,mm]=s.split(':').map(Number);return h*60+mm};
 const pad=n=>String(n).padStart(2,'0');
 const hhmm=()=>{const d=new Date();return d.getHours()+':'+pad(d.getMinutes())};
@@ -363,6 +374,7 @@ addEventListener('hashchange',route);route();render();
 /* ---- conexión compartida ---- */
 (async()=>{
  try{db=await window.claude?.use('db')}catch(e){db=null}
+ if(!db&&!window.claude&&FB.apiKey){try{db=await fbDb()}catch(e){db=null}}
  if(!db){mode='local';try{S=JSON.parse(localStorage.getItem('d12estado2')||'{}');cfg=JSON.parse(localStorage.getItem('d12cfg')||'{"need":{},"qty":{}}');applyCfg()}catch(e){S={}}setStatus('Solo en este teléfono',1);render();return}
  mode='live';
  try{const u=await window.claude?.use('user');if(u&&(await u.can('data.write'))===false)mode='ro'}catch(e){}
