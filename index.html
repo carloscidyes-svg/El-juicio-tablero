@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tablero de listos D12</title>
+<title>Tablero de listos D13</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
 <style>
@@ -191,8 +191,8 @@ button.stt.okb{color:var(--ok)}
 <body>
 <div class="flagbar"></div>
 <header class="band"><div class="wrap">
-<div class="top"><h1>Tablero de listos · D12</h1><span class="st w" id="st">Conectando…</span></div>
-<p class="sub">Lunes 23 de noviembre de 2026 · El Juicio · Toca una casilla cuando el paso esté terminado. «Listo» se enciende solo cuando están todos los pasos.</p>
+<div class="top"><h1>Tablero de listos · D13</h1><span class="st w" id="st">Conectando…</span></div>
+<p class="sub">Miércoles 25 de noviembre de 2026 · El Juicio · Toca una casilla cuando el paso esté terminado. «Listo» se enciende solo cuando están todos los pasos.</p>
 <div class="keys" id="keys"></div>
 <div class="bar"><i id="barf" style="width:0"></i></div>
 </div></header>
@@ -205,14 +205,14 @@ button.stt.okb{color:var(--ok)}
 <section class="view" id="v-b"><h2 style="margin-top:6px">Orden de las escenas</h2><p class="who" style="margin:0 0 8px">Mueve una escena con las flechas. Cambia el orden en todas las pestañas y se guarda para todos.</p><div id="ord"></div><h2 style="margin-top:32px">Banco de extras</h2><p class="who" style="margin:0 0 10px">Elige la escena y cambia cuántos extras necesitas de cada rol (0 = no sale) y cuántos tienes en set. Se guarda para todos.</p><div class="pills" id="bpills"></div><div id="bank"></div></section>
 <section class="view" id="v-m"><h2 style="margin-top:6px">Talentos y extras: todas sus escenas</h2><p class="who" style="margin:0 0 4px">Cada cuadro es un talento o un rol de extras con las escenas en las que sale. Marca vestuario (V), maquillaje (M) y micrófono (Mic) por escena.</p><div id="lg2"></div><div class="srt" id="srt"></div><h2 style="margin:12px 0 0">Talentos</h2><div class="tgrid" id="mx"></div><h2 style="margin:28px 0 0">Extras</h2><div class="tgrid" id="mx2"></div></section>
 <section class="view" id="v-e"><div class="pills" id="pills"></div><div class="panel" id="panel"></div></section>
-<div class="foot"><span id="note">Los datos del plan salen del llamado D12. Las marcas se guardan al tocar.</span><button id="reset">Reiniciar marcas del día</button></div>
+<div class="foot"><span id="note">Los datos del plan salen del llamado D13. Las marcas se guardan al tocar.</span><button id="reset">Reiniciar marcas del día</button></div>
 </div></main>
 <script>
 {
 const $=s=>document.querySelector(s);
 /* Firebase (solo se usa fuera de Claude, por ejemplo en GitHub Pages) */
 const FB={apiKey:"AIzaSyDkLYWhvw0a3bbpNK1uw4WURKs7vu8nTvY",authDomain:"el-juicio-tablero.firebaseapp.com",databaseURL:"https://el-juicio-tablero-default-rtdb.firebaseio.com",projectId:"el-juicio-tablero",storageBucket:"el-juicio-tablero.firebasestorage.app",messagingSenderId:"994916945746",appId:"1:994916945746:web:ca66592afbeadd47f8b48b"};
-const FB_BASE='https://www.gstatic.com/firebasejs/13.4.0/',FB_ROOT='tablero/d12/';
+const FB_BASE='https://www.gstatic.com/firebasejs/13.4.0/',FB_ROOT='tablero/';
 async function fbDb(){
  const {initializeApp}=await import(FB_BASE+'firebase-app.js');
  const {getDatabase,ref,onValue,set}=await import(FB_BASE+'firebase-database.js');
@@ -228,35 +228,21 @@ const today=()=>{const d=new Date();return d.getFullYear()===2026&&d.getMonth()=
 const nowM=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
 /* ---- datos del llamado ---- */
 const cast=[
-[6,'Andrés Aybar','Luis Santana',['13'],'7:00','7:30','8:00'],
-[41,'Oficial calle 1','Luis Rondón',['13'],'7:30','7:00','8:00'],
-[2,'Ángel','Iván Díaz',['16','32'],'8:30','8:00','9:00'],
-[22,'Hombre espía','Irvin Novas',['16','17A'],'8:00','8:30','9:00'],
-[3,'Capitán','Fremy Féliz',['22A','32'],'9:30','9:00','9:45'],
-[1,'María Trinidad Sánchez','Ruth Emeterio',['32','54'],'9:00','9:30','9:45']];
-const grp=[
-['A','6:30','7:30','8:00',[['Comerciantes',2,{'4':2}],['Pareja calle 1845',2,{'4':2}],['Soldados',2,{'4':2}]]],
-['B','7:30','9:00','9:00',[['Vecinos',5,{'13':2,'32':5}],['Soldados calle 1845',3,{'13':3,'15A':2,'29A':2,'32':2}],['Soldados casa María',2,{'22A':2,'32':2}]]],
-['C','8:00','9:30','9:30',[['Hombre carretilla',1,{'16':1,'17A':1}],['Niños juegan',2,{'16':2,'17A':2}],['Comerciante calle María',1,{'29A':1}],['Mujer camina calle María',1,{'29A':1}]]],
-['D','9:00','10:00','10:00',[['Militar haitiano',1,{'54':1}],['Mujer de piel clara',1,{'54':1}]]]];
+[1,'María Trinidad Sánchez','Ruth Emeterio',['15','17','29'],'7:00','6:30','7:30'],
+[2,'Ángel','Iván Díaz',['15','17','29'],'6:30','7:00','7:30']];
+const grp=[];
 const scenes0=[
-['4','Calles de Santo Domingo','En la calle se siente el miedo, hay silencio, nadie celebra.'],
-['13','Calles de Santo Domingo','Arrestan a Andrés Aybar y le quitan el paquete.'],
-['15A','Calle frente casa de María','(POV) María ve pasar unos soldados desde su casa.'],
-['16','Calle frente casa de María','Ángel observa al hombre espía viendo la casa de María.'],
-['17A','Calle frente casa de María','(POV) María ve al hombre espía desde la ventana.'],
-['22A','Calle frente casa de María','(POV) María ve a los soldados que se dispersan.'],
-['29A','Calle frente casa de María','(POV) María en la ventana viendo soldados.'],
-['32','Calle frente casa de María','Vecinos observan cómo se llevan a María en el carruaje militar; Ángel ve la aguja.'],
-['54','Calle frente casa de María 1836 · flashback','María ve a un militar haitiano junto a una dama de piel clara.']];
-const DF={'4':'2','13':'5','15A':'5','16':'5','17A':'5','22A':'6','29A':'8','32':'8','54':'FB 3'};
+['15','Casa de María Trinidad 1845 · interior','Ángel lleva el paquete a María.'],
+['17','Casa de María Trinidad 1845 · interior','Ángel alerta a María de que un espía vigila su casa.'],
+['29','Casa de María Trinidad 1845 · interior','Ángel le propone a María que se vaya de la ciudad.']];
+const DF={'15':'5','17':'5','29':'8'};
 const dfl=sid=>'DF '+DF[sid];
 let scenes=scenes0.slice();
 let order=Object.fromEntries(scenes.map((s,i)=>[s[0],i]));
 const rows=[];
 cast.forEach(c=>rows.push({id:'t'+c[0],k:'t',n:c[0],name:c[1],act:c[2],qty:1,sc:Object.fromEntries(c[3].map(s=>[s,1])),pv:c[4],pm:c[5],lis:c[6]}));
 grp.forEach(g=>g[4].forEach((e,i)=>rows.push({id:'x'+g[0]+i,k:'x',g:g[0],name:e[0],qty:e[1],sc:e[2],pv:g[1],pm:g[1],lis:g[3]})));
-rows.forEach(r=>{r.q0=r.qty;r.sc0={...r.sc};r.scAll={...r.sc};if(r.k==='t')r.ll=r.n===1?'9:00':'6:00'});
+rows.forEach(r=>{r.q0=r.qty;r.sc0={...r.sc};r.scAll={...r.sc};if(r.k==='t')r.ll=r.n===1?'6:00':'6:00'});
 const byId=Object.fromEntries(rows.map(r=>[r.id,r]));
 let cfg={need:{},qty:{}};
 function applyCfg(){
@@ -276,7 +262,7 @@ const scs=r=>Object.keys(r.sc).sort((a,b)=>order[a]-order[b]);
 const units=()=>rows.flatMap(r=>scs(r).map(s=>({r,s,need:r.sc[s]})));
 const tot=()=>units().reduce((a,u)=>a+u.need,0);
 /* ---- estado: una ficha por persona y, dentro, una por escena ---- */
-let sortBy='id';let S={},mode='local',sel='4',bsel='4',onlyP=false,armed=false,db=null;
+let sortBy='id';let S={},mode='local',sel='15',bsel='15',onlyP=false,armed=false,db=null;
 const zu=()=>({ves:0,maq:0,mic:0,t:{}});
 function doc(id){const d=S[id]||{};if(d.s)return{req:!!d.req,s:d.s};
  const r=byId[id],o={req:!!d.req,s:{}};
@@ -291,8 +277,8 @@ const setStatus=(t,w)=>{const e=$('#st');e.textContent=t;e.className='st'+(w?' w
 function fail(e){if(e&&e.code==='invalid_argument'){mode='ro';setStatus('Solo lectura',1);render()}else setStatus('Sin conexión, reintenta',1)}
 function write(id,obj){
  S[id]=obj;render();
- if(mode==='live'&&db){q[id]=(q[id]||Promise.resolve()).then(()=>db.doc('estado/'+id).set(obj)).catch(fail)}
- else if(mode==='local'){try{localStorage.setItem('d12estado2',JSON.stringify(S))}catch(e){}}
+ if(mode==='live'&&db){q[id]=(q[id]||Promise.resolve()).then(()=>db.doc('estado13/'+id).set(obj)).catch(fail)}
+ else if(mode==='local'){try{localStorage.setItem('d13estado',JSON.stringify(S))}catch(e){}}
 }
 function act(id,sid,a){
  if(ro())return;const r=byId[id],d=JSON.parse(JSON.stringify(doc(id))),T=r.sc[sid],s=hhmm();
@@ -304,8 +290,8 @@ function act(id,sid,a){
  write(id,d);
 }
 function saveCfg(){applyCfg();render();
- if(mode==='live'&&db){q.cfg=(q.cfg||Promise.resolve()).then(()=>db.doc('cfg/ajustes').set(cfg)).catch(fail)}
- else if(mode==='local'){try{localStorage.setItem('d12cfg',JSON.stringify(cfg))}catch(e){}}}
+ if(mode==='live'&&db){q.cfg=(q.cfg||Promise.resolve()).then(()=>db.doc('cfg13/ajustes').set(cfg)).catch(fail)}
+ else if(mode==='local'){try{localStorage.setItem('d13cfg',JSON.stringify(cfg))}catch(e){}}}
 function moveScene(id,d){const ids=scenes.map(x=>x[0]),i=ids.indexOf(id),j=i+d;if(j<0||j>=ids.length)return;
  [ids[i],ids[j]]=[ids[j],ids[i]];cfg={...cfg,order:ids};saveCfg()}
 function resetOrder(){cfg={...cfg};delete cfg.order;saveCfg()}
@@ -340,6 +326,7 @@ function row(r,sid,inScene){
 }
 function sceneStat(sid){const us=units().filter(u=>u.s===sid);let need=0,ok=0;us.forEach(u=>{need+=u.need;ok+=luU(u.r,sid)});return{need,ok,done:us.every(u=>okU(u.r,sid)),us}}
 function bank(){
+ if(!rows.some(r=>r.k==='x'))return '<p class="who" style="margin-top:14px">Hoy no hay extras en el llamado.</p>';
  if(ro())return '<p class="who">Solo lectura: pide permiso de editor para cambiar el banco.</p>';
  const st=(id,kind,v)=>`<span class="stp"><button data-nd="${id}:${kind}:-1" aria-label="menos">−</button><b>${v}</b><button data-nd="${id}:${kind}:1" aria-label="más">+</button></span>`;
  const sc=scenes.find(x=>x[0]===bsel);
@@ -398,7 +385,7 @@ function render(){
  const mu=us.filter(u=>doc(u.r.id).req),mt=mu.reduce((a,u)=>a+u.need,0),mn=mu.reduce((a,u)=>a+Math.min(u.need,getU(u.r.id,u.s).mic),0);
  $('#keys').innerHTML=`<div class="key big"><b>${L} / ${T}</b><span>Listos (persona por escena)</span></div><div class="key"><b>${sum('ves')} / ${T}</b><span>Vestuario</span></div><div class="key"><b>${sum('maq')} / ${T}</b><span>Maq. y peluquería</span></div><div class="key"><b>${mt?mn+' / '+mt:'—'}</b><span>Micrófono${mt?'':' (ninguno activo)'}</span></div><div class="key"><b>${scenes.filter(s=>!isDone(s[0])&&sceneStat(s[0]).done).length} / ${scenes.length-nc}</b><span>Escenas listas</span></div><div class="key"><b>${nc} / ${scenes.length}</b><span>Escenas cerradas</span></div>`;
  $('#barf').style.width=(T?L/T*100:100)+'%';
-$('#srt').innerHTML=`<span>Ordenar por:</span><button class="sb${sortBy==='id'?' on':''}" data-sort="id">Número</button><button class="sb${sortBy==='name'?' on':''}" data-sort="name">Nombre</button>`;$('#mx').innerHTML=talentos('t');$('#mx2').innerHTML=talentos('x');
+$('#srt').innerHTML=`<span>Ordenar por:</span><button class="sb${sortBy==='id'?' on':''}" data-sort="id">Número</button><button class="sb${sortBy==='name'?' on':''}" data-sort="name">Nombre</button>`;$('#mx').innerHTML=talentos('t');$('#mx2').innerHTML=talentos('x')||'<p class="who">Hoy no hay extras.</p>';
  $('#pills').innerHTML=vsc().map(s=>{const st=sceneStat(s[0]),p=pct(st),cd=isDone(s[0]);
    return `<button class="pill${st.done?' ok':''}${cd?' cl':''}${sel===s[0]?' sel':''}" data-pick="${s[0]}" style="background:linear-gradient(90deg,color-mix(in srgb,var(--ok) 30%,transparent) ${p}%,transparent ${p}%)"><b>${s[0]}</b><span>${cd?'CERRADA':st.done?'LISTA':st.ok+'/'+st.need}</span><small class="pdf">${dfl(s[0])}</small></button>`}).join('');
  const sc=scenes.find(s=>s[0]===sel),st=sceneStat(sel);
@@ -406,7 +393,7 @@ $('#srt').innerHTML=`<span>Ordenar por:</span><button class="sb${sortBy==='id'?'
  const falta=st.us.filter(u=>!okU(u.r,sel)).map(u=>u.r.name+(u.need>1?' ('+(u.need-luU(u.r,sel))+')':''));
  $('#panel').innerHTML=`<div class="ph"><div><h2>Escena ${sc[0]}</h2><div class="who">${sc[1]} · <b class="dfb">${dfl(sc[0])}</b></div></div><div class="verdict${st.done?' ok':''}">${st.done?'ESCENA LISTA ✓':'Faltan '+(st.need-st.ok)+' de '+st.need}</div></div><button class="cbtn" data-dn="${sc[0]}"${ro()?' disabled':''}>${isDone(sc[0])?'Reabrir escena (está cerrada)':'Cerrar escena'}</button><p class="syn">${sc[2]}</p>${falta.length?`<p class="falta">Falta: ${falta.join(' · ')}</p>`:''}${rs.length?rs.map(u=>row(u.r,sel,true)).join(''):'<div class="empty">Todos listos ✓</div>'}${wrLines(sel)}`;
  $('#ov').innerHTML=overview();$('#lg1').innerHTML=legend();$('#lg2').innerHTML=legend();
- $('#bpills').innerHTML=scenes.map(x=>`<button class="pill${bsel===x[0]?' sel':''}" data-bpick="${x[0]}"><b>${x[0]}</b><span>${rows.filter(r=>r.k==="x").reduce((a,r)=>a+(r.scAll[x[0]]||0),0)} extras</span></button>`).join('');
+ $('#bpills').innerHTML=!rows.some(r=>r.k==='x')?'':scenes.map(x=>`<button class="pill${bsel===x[0]?' sel':''}" data-bpick="${x[0]}"><b>${x[0]}</b><span>${rows.filter(r=>r.k==="x").reduce((a,r)=>a+(r.scAll[x[0]]||0),0)} extras</span></button>`).join('');
  $('#bank').innerHTML=bank();
  $('#ord').innerHTML=ro()?'<p class="who">Solo lectura.</p>':scenes.map((x,i)=>`<div class="od"><span class="on">${i+1}</span><div class="ot"><b>Escena ${x[0]}</b><small>${dfl(x[0])} · ${x[1]}</small></div><button class="mv" data-mv="${x[0]}:-1" aria-label="Subir"${i===0?' disabled':''}>▲</button><button class="mv" data-mv="${x[0]}:1" aria-label="Bajar"${i===scenes.length-1?' disabled':''}>▼</button></div>`).join('')+'<button class="foot-b" data-mv="reset">Volver al orden original</button>';
  $('#reset').textContent=armed?'Toca de nuevo para borrar todo':'Reiniciar marcas del día';
@@ -436,13 +423,13 @@ addEventListener('hashchange',route);route();render();
 (async()=>{
  try{db=await window.claude?.use('db')}catch(e){db=null}
  if(!db&&!window.claude&&FB.apiKey){try{db=await fbDb()}catch(e){db=null}}
- if(!db){mode='local';try{S=JSON.parse(localStorage.getItem('d12estado2')||'{}');cfg=JSON.parse(localStorage.getItem('d12cfg')||'{"need":{},"qty":{}}');applyCfg()}catch(e){S={}}setStatus('Solo en este teléfono',1);render();return}
+ if(!db){mode='local';try{S=JSON.parse(localStorage.getItem('d13estado')||'{}');cfg=JSON.parse(localStorage.getItem('d13cfg')||'{"need":{},"qty":{}}');applyCfg()}catch(e){S={}}setStatus('Solo en este teléfono',1);render();return}
  mode='live';
  try{const u=await window.claude?.use('user');if(u&&(await u.can('data.write'))===false)mode='ro'}catch(e){}
  setStatus(mode==='ro'?'Solo lectura':'En vivo · compartido',mode==='ro');
  const tm=setTimeout(()=>setStatus('Sin respuesta del servidor',1),10000);
- db.doc('cfg/ajustes').onSnapshot(d=>{cfg=d.exists?d.data():{need:{},qty:{}};applyCfg();render()},()=>{});
- db.collection('estado').onSnapshot(sn=>{
+ db.doc('cfg13/ajustes').onSnapshot(d=>{cfg=d.exists?d.data():{need:{},qty:{}};applyCfg();render()},()=>{});
+ db.collection('estado13').onSnapshot(sn=>{
   if(!sn.metadata.fromCache){clearTimeout(tm);setStatus(mode==='ro'?'Solo lectura':'En vivo · compartido',mode==='ro')}
   const n={};sn.docs.forEach(d=>{n[d.id]=d.data()});S=n;render()
  },err=>{clearTimeout(tm);setStatus('Sin conexión compartida',1)});
