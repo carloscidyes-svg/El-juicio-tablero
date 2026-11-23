@@ -171,6 +171,7 @@ button.stt.okb{color:var(--ok)}
 .wb.on{background:var(--ink);color:var(--bg)}.wb:disabled{cursor:default;opacity:.5}
 .wst b{font-size:15px;min-width:7ch}
 .wl{padding:8px 12px;font-size:13px;color:var(--mute)}
+.cg{padding:8px 12px;font-size:13px;line-height:1.45;border-top:1px solid var(--rule)}.cg b{font-weight:800}
 .wrp{border:1.5px dashed var(--rule);border-radius:10px;padding:8px 12px;margin:0 0 12px;font-size:13px;line-height:1.4}
 .wrp b{font-weight:800}
 </style>
@@ -188,7 +189,7 @@ button.stt.okb{color:var(--ok)}
 <button class="tg" id="pend" aria-pressed="false">Solo pendientes</button>
 </div></nav>
 <main class="band"><div class="wrap">
-<section class="view" id="v-r"><h2 style="margin-top:6px">Todo el día de un vistazo</h2><p class="who" style="margin:0 0 8px">Una tarjeta por escena con todas las personas que salen en ella. Toca una escena o una persona para abrirla.</p><div class="lgw" id="lg1"></div><div class="ovg" id="ov"></div><h2>Pendientes por escena</h2><div class="pcards" id="pend2"></div></section>
+<section class="view" id="v-r"><h2 style="margin-top:6px">Todo el día de un vistazo</h2><p class="who" style="margin:0 0 8px">Una tarjeta por escena con todas las personas que salen en ella. Toca una escena o una persona para abrirla.</p><div class="lgw" id="lg1"></div><div class="ovg" id="ov"></div></section>
 <section class="view" id="v-b"><h2 style="margin-top:6px">Orden de las escenas</h2><p class="who" style="margin:0 0 8px">Mueve una escena con las flechas. Cambia el orden en todas las pestañas y se guarda para todos.</p><div id="ord"></div><h2 style="margin-top:32px">Banco de extras</h2><p class="who" style="margin:0 0 10px">Elige la escena y cambia cuántos extras necesitas de cada rol (0 = no sale) y cuántos tienes en set. Se guarda para todos.</p><div class="pills" id="bpills"></div><div id="bank"></div></section>
 <section class="view" id="v-m"><h2 style="margin-top:6px">Talentos y extras: todas sus escenas</h2><p class="who" style="margin:0 0 4px">Cada cuadro es un talento o un rol de extras con las escenas en las que sale. Marca vestuario (V), maquillaje (M) y micrófono (Mic) por escena.</p><div id="lg2"></div><h2 style="margin:18px 0 0">Talentos</h2><div class="tgrid" id="mx"></div><h2 style="margin:28px 0 0">Extras</h2><div class="tgrid" id="mx2"></div></section>
 <section class="view" id="v-e"><div class="pills" id="pills"></div><div class="panel" id="panel"></div></section>
@@ -337,6 +338,9 @@ const sqb=(r,sid,f)=>{const T=r.sc[sid],n=getU(r.id,sid)[f],done=n>=T,part=n>0&&
 const sqs=(r,sid)=>sqb(r,sid,'ves')+sqb(r,sid,'maq')+(doc(r.id).req?sqb(r,sid,'mic'):`<button class="sq x ghost" data-a="req" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''} title="Activar micrófono">Mic</button>`);
 const stb=(r,sid)=>{const T=r.sc[sid],l=luU(r,sid),ok=l>=T;return `<button class="stt${ok?' okb':''}" data-a="all" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''}>${ok?'LISTO':(T>1?l+'/'+T:'falta')}</button>`};
 function wrLines(sid){return rows.filter(r=>isWr(r)&&r.scAll[sid]).map(r=>`<div class="ol cl"><span class="on1 sl"><b>${r.k==='t'?r.name:r.scAll[sid]+'× '+r.name}</b><small>${r.k==='t'?r.act:'Extras'}</small></span><span></span><span class="wtag">WRAP</span></div>`).join('')}
+function cgente(sid){
+ const rs=rows.filter(r=>r.scAll[sid]),t=rs.filter(r=>r.k==='t').map(r=>r.name+' ('+r.act+')'+(isWr(r)?' · WRAP':'')),x=rs.filter(r=>r.k==='x').map(r=>r.scAll[sid]+'× '+r.name);
+ return `<div class="cg"><div><b>Talentos:</b> ${t.join(' · ')||'—'}</div>${x.length?`<div><b>Extras:</b> ${x.join(' · ')}</div>`:''}</div>`}
 function wrapStrip(){
  const w=rows.filter(r=>wrapN(r)>0).map(r=>r.k==='t'?r.name+' ('+r.act+')':r.name+' ('+wrapN(r)+' de '+r.qty+')');
  return w.length?`<div class="wrp"><b>WRAP:</b> ${w.join(' · ')}</div>`:''}
@@ -344,7 +348,7 @@ function overview(){
  return wrapStrip()+vsc().map(sc=>{const sid=sc[0],st=sceneStat(sid),p=pct(st),us=st.us.slice().sort((a,b)=>(a.r.k==='t'?0:1)-(b.r.k==='t'?0:1));
   const lines=us.map(u=>{const r=u.r,ok=okU(r,sid);
    return `<div class="ol${ok?' ok':''}"><button class="on1 nb" data-go="${sid}"><em>${r.k==='t'?r.n:u.need+'×'}</em>${r.name}</button><span class="sqs">${sqs(r,sid)}</span>${stb(r,sid)}</div>`}).join('');
-  if(isDone(sid))return `<div class="oc2 closed"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">CERRADA ✓</span></button><button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Reabrir escena</button></div>`;
+  if(isDone(sid))return `<div class="oc2 closed"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">CERRADA ✓</span></button>${cgente(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Reabrir escena</button></div>`;
   return `<div class="oc2${st.done?' ok':''}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn">${st.done?'LISTA ✓':st.ok+'/'+st.need}</span><i style="width:${p}%"></i></button>${lines}${wrLines(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Cerrar escena</button></div>`}).join('');
 }
 function talentos(k){
@@ -388,7 +392,7 @@ $('#mx').innerHTML=talentos('t');$('#mx2').innerHTML=talentos('x');
  const rs=st.us.filter(u=>!onlyP||!okU(u.r,sel));
  const falta=st.us.filter(u=>!okU(u.r,sel)).map(u=>u.r.name+(u.need>1?' ('+(u.need-luU(u.r,sel))+')':''));
  $('#panel').innerHTML=`<div class="ph"><div><h2>Escena ${sc[0]}</h2><div class="who">${sc[1]} · <b class="dfb">${dfl(sc[0])}</b></div></div><div class="verdict${st.done?' ok':''}">${st.done?'ESCENA LISTA ✓':'Faltan '+(st.need-st.ok)+' de '+st.need}</div></div><button class="cbtn" data-dn="${sc[0]}"${ro()?' disabled':''}>${isDone(sc[0])?'Reabrir escena (está cerrada)':'Cerrar escena'}</button><p class="syn">${sc[2]}</p>${falta.length?`<p class="falta">Falta: ${falta.join(' · ')}</p>`:''}${rs.length?rs.map(u=>row(u.r,sel,true)).join(''):'<div class="empty">Todos listos ✓</div>'}${wrLines(sel)}`;
- $('#ov').innerHTML=overview();$('#lg1').innerHTML=legend();$('#lg2').innerHTML=legend();$('#pend2').innerHTML=pendientes();
+ $('#ov').innerHTML=overview();$('#lg1').innerHTML=legend();$('#lg2').innerHTML=legend();
  $('#bpills').innerHTML=scenes.map(x=>`<button class="pill${bsel===x[0]?' sel':''}" data-bpick="${x[0]}"><b>${x[0]}</b><span>${rows.filter(r=>r.k==="x").reduce((a,r)=>a+(r.scAll[x[0]]||0),0)} extras</span></button>`).join('');
  $('#bank').innerHTML=bank();
  $('#ord').innerHTML=ro()?'<p class="who">Solo lectura.</p>':scenes.map((x,i)=>`<div class="od"><span class="on">${i+1}</span><div class="ot"><b>Escena ${x[0]}</b><small>${dfl(x[0])} · ${x[1]}</small></div><button class="mv" data-mv="${x[0]}:-1" aria-label="Subir"${i===0?' disabled':''}>▲</button><button class="mv" data-mv="${x[0]}:1" aria-label="Bajar"${i===scenes.length-1?' disabled':''}>▼</button></div>`).join('')+'<button class="foot-b" data-mv="reset">Volver al orden original</button>';
