@@ -186,6 +186,7 @@ button.stt.okb{color:var(--ok)}
 .tc.cp .wb{min-height:36px;padding:0 10px;font-size:13px}
 .mw{position:relative;display:inline-flex}
 .mxx{position:absolute;top:-7px;right:-7px;width:22px;height:22px;padding:0;border-radius:50%;border:1.5px solid var(--bg);background:var(--ink);color:var(--bg);font:inherit;font-size:14px;font-weight:800;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.wsc{display:flex;flex-wrap:wrap;gap:4px 6px;margin-top:3px}.wc1{font-size:12px;font-weight:700;border:1.5px solid var(--ink);border-radius:99px;padding:1px 8px;color:var(--ink);background:var(--bg)}.wc1.cl1{border-color:var(--ok);color:var(--ok)}
 </style>
 </head>
 <body>
@@ -360,7 +361,7 @@ function talentos(k){
   const wc=ro()?'':(r.qty===1?`<button class="wb${full?' on':''}" data-wr="${r.id}:${full?-1:1}">${full?'Quitar wrap':'Wrap'}</button>`:`<span class="stp wst"><button data-wr="${r.id}:-1" aria-label="menos wrap">−</button><b>Wrap ${w}/${r.qty}</b><button data-wr="${r.id}:1" aria-label="más wrap">+</button></span>`);
   const hd=`<span class="num">${r.k==='t'?r.n:r.qty+'×'}</span><div><b>${r.name}</b><div class="who">${r.k==='t'?r.act:'Extras · '+r.qty+(r.qty>1?' personas':' persona')+(w>0?' · '+w+' con wrap':'')}</div></div>`;
   if(full){const ss=Object.keys(r.scAll).sort((a,b)=>order[a]-order[b]);
-   return `<div class="tc wrap cp"><span class="num">${r.k==='t'?r.n:r.qty+'×'}</span><div class="cpn"><b>${r.name}</b><small>${r.k==='t'?r.act+' · ':''}Esc. ${ss.join(', ')||'—'}</small></div><span class="wtag">WRAP</span>${wc}</div>`}
+   return `<div class="tc wrap cp"><span class="num">${r.k==='t'?r.n:r.qty+'×'}</span><div class="cpn"><b>${r.name}</b><small>${r.k==='t'?r.act:'Extras'}</small><div class="wsc">${ss.map(x=>isDone(x)?`<span class="wc1 cl1">Esc. ${x} ✓ cerrada</span>`:`<span class="wc1">Esc. ${x} abierta</span>`).join('')||'—'}</div></div><span class="wtag">WRAP</span>${wc}</div>`}
   const all0=scs(r),all=all0.filter(x=>!isDone(x)),n=all.filter(x=>okU(r,x)).length,list=all0.filter(x=>isDone(x)||!onlyP||!okU(r,x)).sort((a,b)=>(isDone(a)?1:0)-(isDone(b)?1:0));
   const lines=list.length?list.map(sid=>{const sc=scenes.find(x=>x[0]===sid),ok=okU(r,sid);
    if(isDone(sid))return `<div class="ol cl"><span class="on1 sl"><b>Esc. ${sid}</b><small>${dfl(sid)} · ${sc[1]}</small></span><span></span><span class="stt" style="color:var(--ok)">CERRADA</span></div>`;
