@@ -189,6 +189,10 @@ button.stt.okb{color:var(--ok)}
 .wsc{display:flex;flex-wrap:wrap;gap:4px 6px;margin-top:3px}.wc1{font-size:12px;font-weight:700;border:1.5px solid var(--ink);border-radius:99px;padding:1px 8px;color:var(--ink);background:var(--bg)}.wc1.cl1{border-color:var(--ok);color:var(--ok)}
 .segs{display:flex;gap:4px;padding:8px 12px 0;background:var(--bg)}.sg{flex:1;height:10px;border-radius:5px;background:var(--rule)}.sg.ok{background:var(--ok)}.sg.pt{background:color-mix(in srgb,var(--ok) 40%,var(--rule))}
 .syn2{margin:0;padding:6px 12px 8px;font-size:13px;color:var(--mute);line-height:1.3}
+.tiles{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tl{width:48px;height:44px;border-radius:8px;border:2px solid var(--rule);background:linear-gradient(0deg,color-mix(in srgb,var(--ok) 28%,transparent) var(--p),var(--bg) var(--p));color:var(--ink);font:inherit;font-stretch:112%;font-weight:800;font-size:16px;cursor:pointer;padding:0}
+.tl.ok{border-color:var(--ok);border-width:3px;color:var(--ok)}
+.tl.cl{background:var(--rule);border-color:var(--rule);color:var(--mute);opacity:.85}
 </style>
 </head>
 <body>
@@ -196,18 +200,18 @@ button.stt.okb{color:var(--ok)}
 <header class="band"><div class="wrap">
 <div class="top"><h1>Tablero de listos · D13</h1><span class="st w" id="st">Conectando…</span></div>
 <p class="sub">Miércoles 25 de noviembre de 2026 · El Juicio · Toca una casilla cuando el paso esté terminado. «Listo» se enciende solo cuando están todos los pasos.</p>
+<div class="bar" style="margin-top:12px"><i id="barf" style="width:0"></i></div><div class="tiles" id="tiles"></div>
 <div class="keys" id="keys"></div>
-<div class="bar"><i id="barf" style="width:0"></i></div>
 </div></header>
 <nav><div class="tabin">
-<div class="seg"><a class="tab" id="t-r" href="#resumen">Resumen</a><a class="tab" id="t-m" href="#talentos">Talentos</a><a class="tab" id="t-e" href="#escenas">Por escena</a><a class="tab" id="t-b" href="#ajustes">Ajustes</a></div>
+<div class="seg"><a class="tab" id="t-r" href="#resumen">Resumen</a><a class="tab" id="t-m" href="#talentos">Talentos</a><a class="tab" id="t-b" href="#ajustes">Ajustes</a></div>
 <button class="tg" id="pend" aria-pressed="false">Solo pendientes</button>
 </div></nav>
 <main class="band"><div class="wrap">
 <section class="view" id="v-r"><h2 style="margin-top:6px">Todo el día de un vistazo</h2><p class="who" style="margin:0 0 8px">Una tarjeta por escena con todas las personas que salen en ella. Toca una escena o una persona para abrirla.</p><div class="lgw" id="lg1"></div><div class="ovg" id="ov"></div></section>
 <section class="view" id="v-b"><h2 style="margin-top:6px">Orden de las escenas</h2><p class="who" style="margin:0 0 8px">Mueve una escena con las flechas. Cambia el orden en todas las pestañas y se guarda para todos.</p><div id="ord"></div><h2 style="margin-top:32px">Banco de extras</h2><p class="who" style="margin:0 0 10px">Elige la escena y cambia cuántos extras necesitas de cada rol (0 = no sale) y cuántos tienes en set. Se guarda para todos.</p><div class="pills" id="bpills"></div><div id="bank"></div></section>
 <section class="view" id="v-m"><h2 style="margin-top:6px">Talentos y extras: todas sus escenas</h2><p class="who" style="margin:0 0 4px">Cada cuadro es un talento o un rol de extras con las escenas en las que sale. Marca vestuario (V), maquillaje (M) y micrófono (Mic) por escena.</p><div id="lg2"></div><div class="srt" id="srt"></div><h2 style="margin:12px 0 0">Talentos</h2><div class="tgrid" id="mx"></div><h2 style="margin:28px 0 0">Extras</h2><div class="tgrid" id="mx2"></div></section>
-<section class="view" id="v-e"><div class="pills" id="pills"></div><div class="panel" id="panel"></div></section>
+
 <div class="foot"><span id="note">Los datos del plan salen del llamado D13. Las marcas se guardan al tocar.</span><button id="reset">Reiniciar marcas del día</button></div>
 </div></main>
 <script>
@@ -351,11 +355,11 @@ function wrapStrip(){
  const w=rows.filter(r=>wrapN(r)>0).map(r=>r.k==='t'?r.name+' ('+r.act+')':r.name+' ('+wrapN(r)+' de '+r.qty+')');
  return w.length?`<div class="wrp"><b>WRAP:</b> ${w.join(' · ')}</div>`:''}
 function overview(){
- return wrapStrip()+vsc().map(sc=>{const sid=sc[0],st=sceneStat(sid),p=pct(st),us=st.us.slice().sort((a,b)=>(a.r.k==='t'?0:1)-(b.r.k==='t'?0:1));
+ return wrapStrip()+scenes.map(sc=>{const sid=sc[0],st=sceneStat(sid),p=pct(st),us=st.us.slice().sort((a,b)=>(a.r.k==='t'?0:1)-(b.r.k==='t'?0:1));
   const lines=us.map(u=>{const r=u.r,ok=okU(r,sid);
    return `<div class="ol${ok?' ok':''}"><button class="on1 nb" data-go="${sid}"><em>${r.k==='t'?r.n:u.need+'×'}</em>${r.name}</button><span class="sqs">${sqs(r,sid)}</span>${stb(r,sid)}</div>`}).join('');
-  if(isDone(sid))return `<div class="oc2 closed"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">CERRADA ✓</span></button>${cgente(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Reabrir escena</button></div>`;
-  return `<div class="oc2${st.done?' ok':''}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn">${st.done?'LISTA ✓':st.ok+'/'+st.need}</span><i style="width:${p}%"></i></button>${lines}${wrLines(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Cerrar escena</button></div>`}).join('');
+  if(isDone(sid))return `<div class="oc2 closed" id="sc-${sid}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">CERRADA ✓</span></button>${cgente(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Reabrir escena</button></div>`;
+  return `<div class="oc2${st.done?' ok':''}" id="sc-${sid}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn">${st.done?'LISTA ✓':st.ok+'/'+st.need}</span><i style="width:${p}%"></i></button>${lines}${wrLines(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Cerrar escena</button></div>`}).join('');
 }
 function talentos(k){
  return rows.filter(r=>r.k===k).sort((a,b)=>(isWr(b)?1:0)-(isWr(a)?1:0)||(sortBy==='name'?a.name.localeCompare(b.name,'es'):(a.k==='t'?a.n-b.n:rows.indexOf(a)-rows.indexOf(b)))).map(r=>{
@@ -392,15 +396,8 @@ function render(){
  $('#keys').innerHTML=`<div class="key big"><b>${L} / ${T}</b><span>Listos (persona por escena)</span></div><div class="key"><b>${sum('ves')} / ${T}</b><span>Vestuario</span></div><div class="key"><b>${sum('maq')} / ${T}</b><span>Maq. y peluquería</span></div><div class="key"><b>${mt?mn+' / '+mt:'—'}</b><span>Micrófono${mt?'':' (ninguno activo)'}</span></div><div class="key"><b>${scenes.filter(s=>!isDone(s[0])&&sceneStat(s[0]).done).length} / ${scenes.length-nc}</b><span>Escenas listas</span></div><div class="key"><b>${nc} / ${scenes.length}</b><span>Escenas cerradas</span></div>`;
  $('#barf').style.width=(T?L/T*100:100)+'%';
 $('#srt').innerHTML=`<span>Ordenar por:</span><button class="sb${sortBy==='id'?' on':''}" data-sort="id">Número</button><button class="sb${sortBy==='name'?' on':''}" data-sort="name">Nombre</button>`;$('#mx').innerHTML=talentos('t');$('#mx2').innerHTML=talentos('x')||'<p class="who">Hoy no hay extras.</p>';
- $('#pills').innerHTML=vsc().map(s=>{const st=sceneStat(s[0]),p=pct(st),cd=isDone(s[0]);
-   return `<button class="pill${st.done?' ok':''}${cd?' cl':''}${sel===s[0]?' sel':''}" data-pick="${s[0]}" style="background:linear-gradient(90deg,color-mix(in srgb,var(--ok) 30%,transparent) ${p}%,transparent ${p}%)"><b>${s[0]}</b><span>${cd?'CERRADA':st.done?'LISTA':st.ok+'/'+st.need}</span><small class="pdf">${dfl(s[0])}</small></button>`}).join('');
- const sc=scenes.find(s=>s[0]===sel),st=sceneStat(sel);
- const rs=st.us.filter(u=>!onlyP||!okU(u.r,sel));
- const falta=st.us.filter(u=>!okU(u.r,sel)).map(u=>u.r.name+(u.need>1?' ('+(u.need-luU(u.r,sel))+')':''));
- const seg=st.us.map(u=>{const ok=okU(u.r,sel),l=luU(u.r,sel);return `<i class="sg${ok?' ok':l>0?' pt':''}" title="${u.r.name}"></i>`}).join('');
- const sorted=rs.slice().sort((a,b)=>(a.r.k==='t'?0:1)-(b.r.k==='t'?0:1));
- const plines=sorted.map(u=>{const r=u.r,ok=okU(r,sel);return `<div class="ol${ok?' ok':''}"><span class="on1 nb"><em>${r.k==='t'?r.n:u.need+'×'}</em>${r.name}</span><span class="sqs">${sqs(r,sel)}</span>${stb(r,sel)}</div>`}).join('');
- $('#panel').innerHTML=`<div class="oc2${st.done?' ok':''}"><div class="och" style="cursor:default"><span class="id">${sc[0]}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sc[0])}</b></span><span class="nn">${isDone(sc[0])?'CERRADA ✓':st.done?'LISTA ✓':st.ok+'/'+st.need}</span><i style="width:${pct(st)}%"></i></div><div class="segs">${seg}</div><p class="syn2">${sc[2]}</p>${plines||'<div class="empty">Todos listos ✓</div>'}${wrLines(sel)}${isDone(sc[0])?`<button class="clb" data-dn="${sc[0]}"${ro()?' disabled':''}>Reabrir escena</button>`:`<button class="clb" data-dn="${sc[0]}"${ro()?' disabled':''}>Cerrar escena</button>`}</div>`;
+ $('#tiles').innerHTML=scenes.map(x=>{const st=sceneStat(x[0]),cd=isDone(x[0]),p=pct(st);
+  return `<button class="tl${cd?' cl':st.done?' ok':''}" data-go="${x[0]}" title="Escena ${x[0]} · ${cd?'cerrada':st.done?'lista':st.ok+' de '+st.need}" style="--p:${cd?0:p}%">${x[0]}</button>`}).join('');
  $('#ov').innerHTML=overview();$('#lg1').innerHTML=legend();$('#lg2').innerHTML=legend();
  $('#bpills').innerHTML=!rows.some(r=>r.k==='x')?'':scenes.map(x=>`<button class="pill${bsel===x[0]?' sel':''}" data-bpick="${x[0]}"><b>${x[0]}</b><span>${rows.filter(r=>r.k==="x").reduce((a,r)=>a+(r.scAll[x[0]]||0),0)} extras</span></button>`).join('');
  $('#bank').innerHTML=bank();
@@ -411,7 +408,7 @@ $('#srt').innerHTML=`<span>Ordenar por:</span><button class="sb${sortBy==='id'?'
 }
 /* ---- eventos ---- */
 document.addEventListener('click',e=>{
- const go=e.target.closest('[data-go]');if(go){sel=go.dataset.go;location.hash='escenas';render();window.scrollTo({top:0});return}
+ const go=e.target.closest('[data-go]');if(go){location.hash='resumen';route();render();const el=document.getElementById('sc-'+go.dataset.go);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});return}
  const mv=e.target.closest('[data-mv]');if(mv&&!ro()&&!mv.disabled){if(mv.dataset.mv==='reset')resetOrder();else{const[id,d]=mv.dataset.mv.split(':');moveScene(id,+d)}return}
  const so=e.target.closest('[data-sort]');if(so){sortBy=so.dataset.sort;render();return}
  const dn=e.target.closest('[data-dn]');if(dn&&!ro()&&!dn.disabled){toggleDone(dn.dataset.dn);return}
@@ -424,9 +421,9 @@ document.addEventListener('click',e=>{
  if(e.target.closest('#reset')&&!ro()){if(!armed){armed=true;render();setTimeout(()=>{armed=false;render()},5000);return}
   armed=false;rows.forEach(r=>{const d=doc(r.id);if(Object.keys(d.s).length||S[r.id])write(r.id,{req:d.req,s:Object.fromEntries(Object.entries(d.s).filter(e=>e[1]&&e[1].rq!=null).map(e=>[e[0],{ves:0,maq:0,mic:0,t:{},rq:e[1].rq}]))})});render()}
 });
-const route=()=>{const h=location.hash.slice(1),v={talentos:'m',todos:'m',matriz:'m',escenas:'e',banco:'b',ajustes:'b'}[h]||'r';
- ['r','m','e','b'].forEach(k=>{$('#v-'+k).classList.toggle('on',k===v);$('#t-'+k).setAttribute('aria-current',k===v?'page':'false')});
- $('#pend').style.display=(v==='m'||v==='e')?'':'none'};
+const route=()=>{const h=location.hash.slice(1),v={talentos:'m',todos:'m',matriz:'m',banco:'b',ajustes:'b'}[h]||'r';
+ ['r','m','b'].forEach(k=>{$('#v-'+k).classList.toggle('on',k===v);$('#t-'+k).setAttribute('aria-current',k===v?'page':'false')});
+ $('#pend').style.display=v==='m'?'':'none'};
 addEventListener('hashchange',route);route();render();
 /* ---- conexión compartida ---- */
 (async()=>{

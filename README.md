@@ -2,7 +2,7 @@
 
 Tablero de set para seguir quién está listo (vestuario, maquillaje/peluquería y micrófono) por escena y por talento durante el rodaje. Es una sola página, `index.html`, sin dependencias ni paso de compilación.
 
-Vistas: Resumen (todas las escenas), Talentos y extras (todas sus escenas), Por escena y Ajustes (orden de escenas y banco de extras).
+Vistas: Resumen (casillas con el estado de cada escena y una tarjeta por escena), Talentos y extras y Ajustes (orden de escenas y banco de extras).
 
 ## Subirlo a GitHub
 
