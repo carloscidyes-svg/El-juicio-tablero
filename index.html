@@ -264,7 +264,8 @@ const wrapN=r=>Math.max(0,Math.min(r.qty,(cfg.wrap&&cfg.wrap[r.id])||0));
 const isWr=r=>wrapN(r)>=r.qty;
 const isDone=sid=>!!(cfg.done&&cfg.done[sid]);
 const vsc=()=>scenes.filter(x=>!isDone(x[0])).concat(scenes.filter(x=>isDone(x[0])));
-const pct=st=>st.need?Math.round(st.ok/st.need*100):100;
+const pct=st=>st.sn?Math.round(st.sg/st.sn*100):100;
+const stepsU=(r,sid)=>{const g=getU(r.id,sid),n=r.sc[sid],q=reqU(r.id,sid);return{n:n*(q?3:2),g:Math.min(n,g.ves)+Math.min(n,g.maq)+(q?Math.min(n,g.mic):0)}};
 const scs=r=>Object.keys(r.sc).sort((a,b)=>order[a]-order[b]);
 const units=()=>rows.flatMap(r=>scs(r).map(s=>({r,s,need:r.sc[s]})));
 const tot=()=>units().reduce((a,u)=>a+u.need,0);
@@ -334,7 +335,7 @@ function row(r,sid,inScene){
  const head=`<span class="num">${r.k==='t'?r.n:T}</span><div><b>${r.name}</b><div class="who">${who}</div><div>${tag}</div></div>`;
  return `<div class="r${ok?' ok':''}"><div class="nm">${head}<button class="chip" data-a="req" data-id="${r.id}" data-sc="${sid}" aria-pressed="${reqU(r.id,sid)}"${ro()?' disabled':''} title="Micrófono en esta escena">Mic</button></div>${cell(r,sid,'ves')}${cell(r,sid,'maq')}${cell(r,sid,'mic')}${rdy(r,sid)}</div>`;
 }
-function sceneStat(sid){const us=units().filter(u=>u.s===sid);let need=0,ok=0;us.forEach(u=>{need+=u.need;ok+=luU(u.r,sid)});return{need,ok,done:us.every(u=>okU(u.r,sid)),us}}
+function sceneStat(sid){const us=units().filter(u=>u.s===sid);let need=0,ok=0,sn=0,sg=0;us.forEach(u=>{need+=u.need;ok+=luU(u.r,sid);const k=stepsU(u.r,sid);sn+=k.n;sg+=k.g});return{need,ok,sn,sg,done:us.every(u=>okU(u.r,sid)),us}}
 function bank(){
  if(!rows.some(r=>r.k==='x'))return '<p class="who" style="margin-top:14px">Hoy no hay extras en el llamado.</p>';
  if(ro())return '<p class="who">Solo lectura: pide permiso de editor para cambiar el banco.</p>';
@@ -355,11 +356,11 @@ function wrapStrip(){
  const w=rows.filter(r=>wrapN(r)>0).map(r=>r.k==='t'?r.name+' ('+r.act+')':r.name+' ('+wrapN(r)+' de '+r.qty+')');
  return w.length?`<div class="wrp"><b>WRAP:</b> ${w.join(' · ')}</div>`:''}
 function overview(){
- return wrapStrip()+scenes.map(sc=>{const sid=sc[0],st=sceneStat(sid),p=pct(st),us=st.us.slice().sort((a,b)=>(a.r.k==='t'?0:1)-(b.r.k==='t'?0:1));
+ return wrapStrip()+vsc().map(sc=>{const sid=sc[0],st=sceneStat(sid),p=pct(st),us=st.us.slice().sort((a,b)=>(a.r.k==='t'?0:1)-(b.r.k==='t'?0:1));
   const lines=us.map(u=>{const r=u.r,ok=okU(r,sid);
    return `<div class="ol${ok?' ok':''}"><button class="on1 nb" data-go="${sid}"><em>${r.k==='t'?r.n:u.need+'×'}</em>${r.name}</button><span class="sqs">${sqs(r,sid)}</span>${stb(r,sid)}</div>`}).join('');
   if(isDone(sid))return `<div class="oc2 closed" id="sc-${sid}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">CERRADA ✓</span></button>${cgente(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Reabrir escena</button></div>`;
-  return `<div class="oc2${st.done?' ok':''}" id="sc-${sid}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn">${st.done?'LISTA ✓':st.ok+'/'+st.need}</span><i style="width:${p}%"></i></button>${lines}${wrLines(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Cerrar escena</button></div>`}).join('');
+  return `<div class="oc2${st.done?' ok':''}" id="sc-${sid}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn">${st.done?'LISTA ✓':st.sg+'/'+st.sn}</span><i style="width:${p}%"></i></button>${lines}${wrLines(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Cerrar escena</button></div>`}).join('');
 }
 function talentos(k){
  return rows.filter(r=>r.k===k).sort((a,b)=>(isWr(b)?1:0)-(isWr(a)?1:0)||(sortBy==='name'?a.name.localeCompare(b.name,'es'):(a.k==='t'?a.n-b.n:rows.indexOf(a)-rows.indexOf(b)))).map(r=>{
@@ -394,10 +395,10 @@ function render(){
  const L=us.reduce((a,u)=>a+luU(u.r,u.s),0);
  const mu=us.filter(u=>reqU(u.r.id,u.s)),mt=mu.reduce((a,u)=>a+u.need,0),mn=mu.reduce((a,u)=>a+Math.min(u.need,getU(u.r.id,u.s).mic),0);
  $('#keys').innerHTML=`<div class="key big"><b>${L} / ${T}</b><span>Listos (persona por escena)</span></div><div class="key"><b>${sum('ves')} / ${T}</b><span>Vestuario</span></div><div class="key"><b>${sum('maq')} / ${T}</b><span>Maq. y peluquería</span></div><div class="key"><b>${mt?mn+' / '+mt:'—'}</b><span>Micrófono${mt?'':' (ninguno activo)'}</span></div><div class="key"><b>${scenes.filter(s=>!isDone(s[0])&&sceneStat(s[0]).done).length} / ${scenes.length-nc}</b><span>Escenas listas</span></div><div class="key"><b>${nc} / ${scenes.length}</b><span>Escenas cerradas</span></div>`;
- $('#barf').style.width=(T?L/T*100:100)+'%';
+ const gs=scenes.filter(x=>!isDone(x[0])).map(x=>sceneStat(x[0])),GN=gs.reduce((a,x)=>a+x.sn,0),GG=gs.reduce((a,x)=>a+x.sg,0);$('#barf').style.width=(GN?GG/GN*100:100)+'%';
 $('#srt').innerHTML=`<span>Ordenar por:</span><button class="sb${sortBy==='id'?' on':''}" data-sort="id">Número</button><button class="sb${sortBy==='name'?' on':''}" data-sort="name">Nombre</button>`;$('#mx').innerHTML=talentos('t');$('#mx2').innerHTML=talentos('x')||'<p class="who">Hoy no hay extras.</p>';
  $('#tiles').innerHTML=scenes.map(x=>{const st=sceneStat(x[0]),cd=isDone(x[0]),p=pct(st);
-  return `<button class="tl${cd?' cl':st.done?' ok':''}" data-go="${x[0]}" title="Escena ${x[0]} · ${cd?'cerrada':st.done?'lista':st.ok+' de '+st.need}" style="--p:${cd?0:p}%">${x[0]}</button>`}).join('');
+  return `<button class="tl${cd?' cl':st.done?' ok':''}" data-go="${x[0]}" title="Escena ${x[0]} · ${cd?'cerrada':st.done?'lista':st.sg+' de '+st.sn+' pasos'}" style="--p:${cd?0:p}%">${x[0]}</button>`}).join('');
  $('#ov').innerHTML=overview();$('#lg1').innerHTML=legend();$('#lg2').innerHTML=legend();
  $('#bpills').innerHTML=!rows.some(r=>r.k==='x')?'':scenes.map(x=>`<button class="pill${bsel===x[0]?' sel':''}" data-bpick="${x[0]}"><b>${x[0]}</b><span>${rows.filter(r=>r.k==="x").reduce((a,r)=>a+(r.scAll[x[0]]||0),0)} extras</span></button>`).join('');
  $('#bank').innerHTML=bank();
