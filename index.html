@@ -193,6 +193,9 @@ button.stt.okb{color:var(--ok)}
 .tl{width:48px;height:44px;border-radius:8px;border:2px solid var(--rule);background:linear-gradient(0deg,color-mix(in srgb,var(--ok) 28%,transparent) var(--p),var(--bg) var(--p));color:var(--ink);font:inherit;font-stretch:112%;font-weight:800;font-size:16px;cursor:pointer;padding:0}
 .tl.ok{border-color:var(--ok);border-width:3px;color:var(--ok)}
 .tl.cl{background:var(--rule);border-color:var(--rule);color:var(--mute);opacity:.85}
+.wbr{min-height:40px;min-width:60px;padding:0 8px;border-radius:8px;border:2px solid var(--rule);background:var(--bg);color:var(--mute);font:inherit;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap}
+.wbr.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#ov .ol{grid-template-columns:minmax(0,1fr) auto auto}
 </style>
 </head>
 <body>
@@ -348,7 +351,8 @@ const sqb=(r,sid,f)=>{const T=r.sc[sid],n=getU(r.id,sid)[f],done=n>=T,part=n>0&&
  return `<button class="sq ${f==='ves'?'v':f==='maq'?'m':'x'}${done?' on':part?' part':''}" data-a="${f}" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''}>${done||T===1?lab:n+'/'+T}</button>`};
 const sqs=(r,sid)=>sqb(r,sid,'ves')+sqb(r,sid,'maq')+(reqU(r.id,sid)?sqb(r,sid,'mic'):`<button class="sq x ghost" data-a="req" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''} title="Activar micrófono">Mic</button>`);
 const stb=(r,sid)=>{const T=r.sc[sid],l=luU(r,sid),ok=l>=T;return `<button class="stt${ok?' okb':''}" data-a="all" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''}>${ok?'LISTO':(T>1?l+'/'+T:'falta')}</button>`};
-function wrLines(sid){return rows.filter(r=>isWr(r)&&r.scAll[sid]).map(r=>`<div class="ol cl"><span class="on1 sl"><b>${r.k==='t'?r.name:r.scAll[sid]+'× '+r.name}</b><small>${r.k==='t'?r.act:'Extras'}</small></span><span></span><span class="wtag">WRAP</span></div>`).join('')}
+const wrb=r=>ro()?'<span class="stt"></span>':`<button class="wbr${wrapN(r)>0?' on':''}" data-wrc="${r.id}">${r.qty>1?'Wrap '+wrapN(r)+'/'+r.qty:'Wrap'}</button>`;
+function wrLines(sid){return rows.filter(r=>isWr(r)&&r.scAll[sid]).map(r=>`<div class="ol cl"><span class="on1 sl"><b>${r.k==='t'?r.name:r.scAll[sid]+'× '+r.name}</b><small>${r.k==='t'?r.act:'Extras'}</small></span><span class="wtag">WRAP</span>${ro()?'':`<button class="wbr on" data-wrc="${r.id}">Quitar</button>`}</div>`).join('')}
 function cgente(sid){
  const rs=rows.filter(r=>r.scAll[sid]),t=rs.filter(r=>r.k==='t').map(r=>r.name+' ('+r.act+')'+(isWr(r)?' · WRAP':'')),x=rs.filter(r=>r.k==='x').map(r=>r.scAll[sid]+'× '+r.name);
  return `<div class="cg"><div><b>Talentos:</b> ${t.join(' · ')||'—'}</div>${x.length?`<div><b>Extras:</b> ${x.join(' · ')}</div>`:''}</div>`}
@@ -358,7 +362,7 @@ function wrapStrip(){
 function overview(){
  return wrapStrip()+vsc().map(sc=>{const sid=sc[0],st=sceneStat(sid),p=pct(st),us=st.us.slice().sort((a,b)=>(a.r.k==='t'?0:1)-(b.r.k==='t'?0:1));
   const lines=us.map(u=>{const r=u.r,ok=okU(r,sid);
-   return `<div class="ol${ok?' ok':''}"><button class="on1 nb" data-go="${sid}"><em>${r.k==='t'?r.n:u.need+'×'}</em>${r.name}</button><span class="sqs">${sqs(r,sid)}</span>${stb(r,sid)}</div>`}).join('');
+   return `<div class="ol${ok?' ok':''}"><button class="on1 nb" data-go="${sid}"><em>${r.k==='t'?r.n:u.need+'×'}</em>${r.name}</button><span class="sqs">${sqs(r,sid)}</span>${wrb(r)}</div>`}).join('');
   if(isDone(sid))return `<div class="oc2 closed" id="sc-${sid}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">CERRADA ✓</span></button>${cgente(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Reabrir escena</button></div>`;
   return `<div class="oc2${st.done?' ok':''}" id="sc-${sid}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn">${st.done?'LISTA ✓':st.sg+'/'+st.sn}</span><i style="width:${p}%"></i></button>${lines}${wrLines(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Cerrar escena</button></div>`}).join('');
 }
@@ -413,6 +417,7 @@ document.addEventListener('click',e=>{
  const mv=e.target.closest('[data-mv]');if(mv&&!ro()&&!mv.disabled){if(mv.dataset.mv==='reset')resetOrder();else{const[id,d]=mv.dataset.mv.split(':');moveScene(id,+d)}return}
  const so=e.target.closest('[data-sort]');if(so){sortBy=so.dataset.sort;render();return}
  const dn=e.target.closest('[data-dn]');if(dn&&!ro()&&!dn.disabled){toggleDone(dn.dataset.dn);return}
+ const wc=e.target.closest('[data-wrc]');if(wc&&!ro()&&!wc.disabled){const r=byId[wc.dataset.wrc];setWrap(r.id,wrapN(r)>=r.qty?-r.qty:1);return}
  const wr=e.target.closest('[data-wr]');if(wr&&!ro()&&!wr.disabled){const[id,d]=wr.dataset.wr.split(':');setWrap(id,+d);return}
  const bp=e.target.closest('[data-bpick]');if(bp){bsel=bp.dataset.bpick;render();return}
  const sp=e.target.closest('[data-pick]');if(sp){sel=sp.dataset.pick;render();return}
