@@ -196,6 +196,9 @@ button.stt.okb{color:var(--ok)}
 .wbr{min-height:40px;min-width:60px;padding:0 8px;border-radius:8px;border:2px solid var(--rule);background:var(--bg);color:var(--mute);font:inherit;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap}
 .wbr.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 #ov .ol{grid-template-columns:minmax(0,1fr) auto auto}
+.lgt{width:100%;font-style:normal;font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);margin-top:6px}
+.lg span{white-space:normal}.lgw2{font-style:normal;font-weight:700;font-size:12px;border:2px solid var(--rule);border-radius:8px;padding:6px 10px;color:var(--mute);background:var(--bg)}
+.tl.mini{display:inline-flex;align-items:center;justify-content:center;width:34px;height:28px;font-size:13px;border-width:2px;cursor:default;font-style:normal}.tl.mini.ok{border-width:3px}
 </style>
 </head>
 <body>
@@ -211,7 +214,7 @@ button.stt.okb{color:var(--ok)}
 <button class="tg" id="pend" aria-pressed="false">Solo pendientes</button>
 </div></nav>
 <main class="band"><div class="wrap">
-<section class="view" id="v-r"><h2 style="margin-top:6px">Todo el día de un vistazo</h2><p class="who" style="margin:0 0 8px">Una tarjeta por escena con todas las personas que salen en ella. Toca una escena o una persona para abrirla.</p><div class="lgw" id="lg1"></div><div class="ovg" id="ov"></div></section>
+<section class="view" id="v-r"><h2 style="margin-top:6px">Todo el día de un vistazo</h2><p class="who" style="margin:0 0 8px">Una tarjeta por escena con todas las personas que salen en ella. Toca una escena o una persona para abrirla.</p><div class="ovg" id="ov"></div><div class="lgw" id="lg1"></div></section>
 <section class="view" id="v-b"><h2 style="margin-top:6px">Orden de las escenas</h2><p class="who" style="margin:0 0 8px">Mueve una escena con las flechas. Cambia el orden en todas las pestañas y se guarda para todos.</p><div id="ord"></div><h2 style="margin-top:32px">Banco de extras</h2><p class="who" style="margin:0 0 10px">Elige la escena y cambia cuántos extras necesitas de cada rol (0 = no sale) y cuántos tienes en set. Se guarda para todos.</p><div class="pills" id="bpills"></div><div id="bank"></div></section>
 <section class="view" id="v-m"><h2 style="margin-top:6px">Talentos y extras: todas sus escenas</h2><p class="who" style="margin:0 0 4px">Cada cuadro es un talento o un rol de extras con las escenas en las que sale. Marca vestuario (V), maquillaje (M) y micrófono (Mic) por escena.</p><div id="lg2"></div><div class="srt" id="srt"></div><h2 style="margin:12px 0 0">Talentos</h2><div class="tgrid" id="mx"></div><h2 style="margin:28px 0 0">Extras</h2><div class="tgrid" id="mx2"></div></section>
 
@@ -379,7 +382,15 @@ function talentos(k){
    return `<div class="ol${ok?' ok':''}"><button class="on1 nb sl" data-go="${sid}"><b>Esc. ${sid}</b><small>${dfl(sid)}${r.k==='x'&&r.qty>1?' · necesita '+r.sc[sid]+' de '+r.qty:''} · ${sc[1]}</small></button><span class="sqs">${sqs(r,sid)}</span>${stb(r,sid)}</div>`}).join(''):'<div class="empty">Todas listas ✓</div>';
   return `<div class="tc${n===all.length?' ok':''}"><div class="tch">${hd}<div class="tcr"><b>${n}/${all.length}</b>${wc}${all0.length?`<button class="chip" data-a="reqall" data-id="${r.id}" data-sc="${all0[0]}" aria-pressed="${all0.every(x=>reqU(r.id,x))}"${ro()?' disabled':''} title="Micrófono en todas sus escenas">Mic</button>`:''}</div></div>${lines}</div>`}).join('');
 }
-function legend(){return `<div class="lg"><b>Qué significan los colores</b><span><i class="sq v on">V</i> Vestuario listo</span><span><i class="sq m on">M</i> Maquillaje y peluquería listo</span><span><i class="sq x on">Mic</i> Micrófono listo (solo si lleva)</span><span><i class="sq v part">1/2</i> Avance parcial</span><span><i class="sq v">V</i> Pendiente</span><span><i class="lgo">LISTO</i> Todos los pasos hechos</span></div>`}
+function legend(){return `<div class="lg"><b>Qué significan los colores</b>
+<em class="lgt">Casillas de cada persona</em>
+<span><i class="sq v on">V</i> Vestuario listo</span><span><i class="sq m on">M</i> Maquillaje y peluquería listo</span><span><i class="sq x on">Mic</i> Micrófono listo</span>
+<span><i class="sq x ghost">Mic</i> No lleva micrófono en esa escena (tócalo para activarlo; otro toque lo marca listo y otro más lo apaga)</span>
+<span><i class="sq v part">1/2</i> Avance parcial (extras)</span><span><i class="sq v">V</i> Pendiente</span>
+<span><i class="lgo">LISTO</i> Persona con todos sus pasos hechos (fila verde)</span><span><i class="lgw2">Wrap</i> Ya terminó: deja de contar en las escenas</span>
+<em class="lgt">Números de arriba (una casilla por escena)</em>
+<span><i class="tl mini" style="--p:0%">15</i> Sin empezar</span><span><i class="tl mini" style="--p:55%">15</i> En progreso (se va llenando)</span><span><i class="tl mini ok" style="--p:100%">15</i> Lista</span><span><i class="tl mini cl">15</i> Cerrada</span>
+</div>`}
 function pendientes(){
  const cl=scenes.filter(x=>isDone(x[0])).map(x=>x[0]);
  return scenes.filter(x=>!isDone(x[0])).map(sc=>{const sid=sc[0],st=sceneStat(sid),bad=st.us.filter(u=>!okU(u.r,sid)),good=st.us.filter(u=>okU(u.r,sid));
