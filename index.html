@@ -394,7 +394,7 @@ function render(){
  const sum=f=>us.reduce((a,u)=>a+Math.min(u.need,getU(u.r.id,u.s)[f]),0);
  const L=us.reduce((a,u)=>a+luU(u.r,u.s),0);
  const mu=us.filter(u=>reqU(u.r.id,u.s)),mt=mu.reduce((a,u)=>a+u.need,0),mn=mu.reduce((a,u)=>a+Math.min(u.need,getU(u.r.id,u.s).mic),0);
- $('#keys').innerHTML=`<div class="key big"><b>${L} / ${T}</b><span>Listos (persona por escena)</span></div><div class="key"><b>${sum('ves')} / ${T}</b><span>Vestuario</span></div><div class="key"><b>${sum('maq')} / ${T}</b><span>Maq. y peluquería</span></div><div class="key"><b>${mt?mn+' / '+mt:'—'}</b><span>Micrófono${mt?'':' (ninguno activo)'}</span></div><div class="key"><b>${scenes.filter(s=>!isDone(s[0])&&sceneStat(s[0]).done).length} / ${scenes.length-nc}</b><span>Escenas listas</span></div><div class="key"><b>${nc} / ${scenes.length}</b><span>Escenas cerradas</span></div>`;
+ $('#keys').innerHTML=`<div class="key"><b>${sum('ves')} / ${T}</b><span>Vestuario</span></div><div class="key"><b>${sum('maq')} / ${T}</b><span>Maq. y peluquería</span></div>`;
  const gs=scenes.filter(x=>!isDone(x[0])).map(x=>sceneStat(x[0])),GN=gs.reduce((a,x)=>a+x.sn,0),GG=gs.reduce((a,x)=>a+x.sg,0);$('#barf').style.width=(GN?GG/GN*100:100)+'%';
 $('#srt').innerHTML=`<span>Ordenar por:</span><button class="sb${sortBy==='id'?' on':''}" data-sort="id">Número</button><button class="sb${sortBy==='name'?' on':''}" data-sort="name">Nombre</button>`;$('#mx').innerHTML=talentos('t');$('#mx2').innerHTML=talentos('x')||'<p class="who">Hoy no hay extras.</p>';
  $('#tiles').innerHTML=scenes.map(x=>{const st=sceneStat(x[0]),cd=isDone(x[0]),p=pct(st);
