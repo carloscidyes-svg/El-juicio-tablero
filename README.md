@@ -35,7 +35,7 @@ Ojo: GitHub Pages desde un repositorio privado necesita un plan de GitHub que lo
 
 ## Marcas compartidas (Firebase)
 
-Fuera de Claude la página usa Firebase Realtime Database (proyecto `el-juicio-tablero`, datos en `tablero/estado13` y `tablero/cfg13`, separados del día 12). Todos los que abran el enlace de GitHub Pages ven las marcas en tiempo real; el indicador dice «En vivo · compartido». Si Firebase no responde, la página cae a `localStorage` y dice «Solo en este teléfono».
+Fuera de Claude la página usa Firebase Realtime Database (proyecto `el-juicio-tablero`, datos en `tablero/estado13b` y `tablero/cfg13b`, separados del día 12). Todos los que abran el enlace de GitHub Pages ven las marcas en tiempo real; el indicador dice «En vivo · compartido». Si Firebase no responde, la página cae a `localStorage` y dice «Solo en este teléfono».
 
 - Los datos de la versión en Claude y los de Firebase son separados: el equipo debe usar un solo enlace (el de GitHub Pages).
 - Las reglas de la base de datos están abiertas para lectura y escritura: cualquiera con el enlace puede marcar. Para cerrar el acceso después del rodaje, cambia las reglas en la consola de Firebase.
