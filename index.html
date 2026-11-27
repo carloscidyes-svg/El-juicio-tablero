@@ -205,7 +205,7 @@ button.stt.okb{color:var(--ok)}
 <div class="flagbar"></div>
 <header class="band"><div class="wrap">
 <div class="top"><h1>Tablero de listos · D13</h1><span class="st w" id="st">Conectando…</span></div>
-<p class="sub">Jueves 26 de noviembre de 2026 · El Juicio · Toca una casilla cuando el paso esté terminado. «Listo» se enciende solo cuando están todos los pasos.</p>
+<p class="sub">Sábado 28 de noviembre de 2026 · El Juicio · Toca una casilla cuando el paso esté terminado. «Listo» se enciende solo cuando están todos los pasos.</p>
 <div class="bar" style="margin-top:12px"><i id="barf" style="width:0"></i></div><div class="tiles" id="tiles"></div>
 <div class="keys" id="keys"></div>
 </div></header>
@@ -241,17 +241,14 @@ const today=()=>{const d=new Date();return d.getFullYear()===2026&&d.getMonth()=
 const nowM=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
 /* ---- datos del llamado ---- */
 const cast=[
-[1,'María Trinidad Sánchez','Ruth Emeterio',['15','17','22','30','31'],'7:00','6:30','7:30'],
-[2,'Ángel','Iván Díaz',['15','17','30','31'],'6:30','7:00','7:30'],
-[3,'Capitán','Fremy Féliz',['22','30','31'],'7:30','7:00','8:00']];
-const grp=[['A','6:00','7:30','8:15',[['Soldados casa María',2,{'22':2,'30':2,'31':2}],['Soldados calle 1845',2,{'30':2,'31':2}]]]];
+[1,'María Trinidad Sánchez','Ruth Emeterio',['15','17','29'],'7:00','6:30','7:30'],
+[2,'Ángel','Iván Díaz',['15','17','29'],'6:30','7:00','7:30']];
+const grp=[];
 const scenes0=[
 ['15','Casa de María Trinidad 1845 · interior','Ángel lleva el paquete a María.'],
 ['17','Casa de María Trinidad 1845 · interior','Ángel alerta a María de que un espía vigila su casa.'],
-['22','Casa de María Trinidad 1845 · interior','El Capitán y los soldados registran la casa de María Trinidad.'],
-['30','Casa de María Trinidad 1845 · interior','El Capitán llega con orden de arresto para María.'],
-['31','Casa de María Trinidad 1845 · interior','María es arrestada y se despide de Ángel.']];
-const DF={'15':'5','17':'5','22':'6','30':'8','31':'8'};
+['29','Casa de María Trinidad 1845 · interior','Ángel le propone a María que se vaya de la ciudad.']];
+const DF={'15':'5','17':'5','29':'8'};
 const dfl=sid=>'DF '+DF[sid];
 let scenes=scenes0.slice();
 let order=Object.fromEntries(scenes.map((s,i)=>[s[0],i]));
@@ -295,8 +292,8 @@ const setStatus=(t,w)=>{const e=$('#st');e.textContent=t;e.className='st'+(w?' w
 function fail(e){if(e&&e.code==='invalid_argument'){mode='ro';setStatus('Solo lectura',1);render()}else setStatus('Sin conexión, reintenta',1)}
 function write(id,obj){
  S[id]=obj;render();
- if(mode==='live'&&db){q[id]=(q[id]||Promise.resolve()).then(()=>db.doc('estado13b/'+id).set(obj)).catch(fail)}
- else if(mode==='local'){try{localStorage.setItem('d13bestado',JSON.stringify(S))}catch(e){}}
+ if(mode==='live'&&db){q[id]=(q[id]||Promise.resolve()).then(()=>db.doc('estado13c/'+id).set(obj)).catch(fail)}
+ else if(mode==='local'){try{localStorage.setItem('d13cestado',JSON.stringify(S))}catch(e){}}
 }
 function act(id,sid,a){
  if(ro())return;const r=byId[id],d=JSON.parse(JSON.stringify(doc(id))),T=r.sc[sid],s=hhmm();
@@ -310,8 +307,8 @@ function act(id,sid,a){
  write(id,d);
 }
 function saveCfg(){applyCfg();render();
- if(mode==='live'&&db){q.cfg=(q.cfg||Promise.resolve()).then(()=>db.doc('cfg13b/ajustes').set(cfg)).catch(fail)}
- else if(mode==='local'){try{localStorage.setItem('d13bcfg',JSON.stringify(cfg))}catch(e){}}}
+ if(mode==='live'&&db){q.cfg=(q.cfg||Promise.resolve()).then(()=>db.doc('cfg13c/ajustes').set(cfg)).catch(fail)}
+ else if(mode==='local'){try{localStorage.setItem('d13ccfg',JSON.stringify(cfg))}catch(e){}}}
 function moveScene(id,d){const ids=scenes.map(x=>x[0]),i=ids.indexOf(id),j=i+d;if(j<0||j>=ids.length)return;
  [ids[i],ids[j]]=[ids[j],ids[i]];cfg={...cfg,order:ids};saveCfg()}
 function resetOrder(){cfg={...cfg};delete cfg.order;saveCfg()}
@@ -449,12 +446,12 @@ addEventListener('hashchange',route);route();render();
 (async()=>{
  try{db=await window.claude?.use('db')}catch(e){db=null}
  if(!db&&!window.claude&&FB.apiKey){try{db=await fbDb()}catch(e){db=null}}
- if(!db){mode='local';try{S=JSON.parse(localStorage.getItem('d13bestado')||'{}');cfg=JSON.parse(localStorage.getItem('d13bcfg')||'{"need":{},"qty":{}}');applyCfg()}catch(e){S={}}setStatus('Solo en este teléfono',1);render();return}
+ if(!db){mode='local';try{S=JSON.parse(localStorage.getItem('d13cestado')||'{}');cfg=JSON.parse(localStorage.getItem('d13ccfg')||'{"need":{},"qty":{}}');applyCfg()}catch(e){S={}}setStatus('Solo en este teléfono',1);render();return}
  mode='live';
  try{const u=await window.claude?.use('user');if(u&&(await u.can('data.write'))===false)mode='ro'}catch(e){}
  setStatus(mode==='ro'?'Solo lectura':'En vivo · compartido',mode==='ro');
  const tm=setTimeout(()=>setStatus('Sin respuesta del servidor',1),10000);
- db.doc('cfg13b/ajustes').onSnapshot(d=>{cfg=d.exists?d.data():{need:{},qty:{}};applyCfg();render()},()=>{});
+ db.doc('cfg13c/ajustes').onSnapshot(d=>{cfg=d.exists?d.data():{need:{},qty:{}};applyCfg();render()},()=>{});
  db.collection('estado13').onSnapshot(sn=>{
   if(!sn.metadata.fromCache){clearTimeout(tm);setStatus(mode==='ro'?'Solo lectura':'En vivo · compartido',mode==='ro')}
   const n={};sn.docs.forEach(d=>{n[d.id]=d.data()});S=n;render()
