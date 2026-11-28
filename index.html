@@ -192,7 +192,7 @@ button.stt.okb{color:var(--ok)}
 .tiles{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .tl{width:48px;height:44px;border-radius:8px;border:2px solid var(--rule);background:linear-gradient(0deg,color-mix(in srgb,var(--ok) 28%,transparent) var(--p),var(--bg) var(--p));color:var(--ink);font:inherit;font-stretch:112%;font-weight:800;font-size:16px;cursor:pointer;padding:0}
 .tl.ok{border-color:var(--ok);border-width:3px;color:var(--ok)}
-.tl.rec{background:var(--red);border-color:var(--red);color:#fff}.oc2.rec{border-color:var(--red);box-shadow:0 0 0 2px var(--red)}.nn.rc{color:var(--red);font-weight:800}.oc2.rw{position:relative}.oc2.rw .och .nn{align-self:end;margin-top:30px}.recp{position:absolute;top:8px;right:12px;width:28px;height:28px;padding:0;border-radius:50%;border:2px solid var(--red);background:var(--bg);color:var(--red);font:inherit;font-size:14px;line-height:1;cursor:pointer;z-index:2}.recp.on{background:var(--red);color:#fff}.recp:disabled{cursor:default;opacity:.6}
+.tl.rec{background:var(--red);border-color:var(--red);color:#fff}.oc2.rec{border-color:var(--red);box-shadow:0 0 0 2px var(--red)}.nn.rc{color:var(--red);font-weight:800}.oc2.rw{position:relative}.oc2.rw .och .nn{align-self:end;margin-top:26px}.recp{position:absolute;top:10px;right:14px;width:20px;height:20px;padding:0;border-radius:50%;border:0;background:#b4bac6;font-size:0;cursor:pointer;z-index:2;box-shadow:0 0 0 6px transparent}.recp.on{background:var(--red)}.rdot{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px}.recp:disabled{cursor:default;opacity:.6}
 .recb{display:block;width:100%;min-height:44px;border:0;border-top:1px solid var(--rule);background:var(--bg);color:var(--red);font:inherit;font-weight:800;font-size:14px;cursor:pointer}.recb.on{background:var(--red);color:#fff}.recb:disabled{cursor:default;opacity:.5}
 .tl.cl{background:var(--rule);border-color:var(--rule);color:var(--mute);opacity:.85}
 .wbr{min-height:40px;min-width:60px;padding:0 8px;border-radius:8px;border:2px solid var(--rule);background:var(--bg);color:var(--mute);font:inherit;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap}
@@ -426,7 +426,7 @@ function legend(){return `<div class="lg"><b>Qué significan los colores</b>
 <span><i class="sq v part">1/2</i> Avance parcial (extras)</span><span><i class="sq v">V</i> Sin empezar</span>
 <span><i class="lgo">LISTO</i> Persona con todos sus pasos hechos (fila verde)</span><span><i class="lgw2">Wrap</i> Ya terminó: deja de contar en las escenas</span>
 <em class="lgt">Números de arriba (una casilla por escena)</em>
-<span><i class="tl mini" style="--p:0%">15</i> Sin empezar</span><span><i class="tl mini" style="--p:55%">15</i> En progreso (se va llenando)</span><span><i class="tl mini ok" style="--p:100%">15</i> Lista</span><span><i class="tl mini rec">15</i> Grabando</span><span><i class="tl mini cl">15</i> Cerrada</span>
+<span><i class="tl mini" style="--p:0%">15</i> Sin empezar</span><span><i class="tl mini" style="--p:55%">15</i> En progreso (se va llenando)</span><span><i class="tl mini ok" style="--p:100%">15</i> Lista</span><span><i class="tl mini rec">15</i> Grabando</span><span><i class="rdot" style="background:var(--red)"></i> Punto rojo: escena grabando</span><span><i class="rdot" style="background:#b4bac6"></i> Punto gris: no se está grabando (tócalo para activarlo)</span><span><i class="tl mini cl">15</i> Cerrada</span>
 </div>`}
 function pendientes(){
  const cl=scenes.filter(x=>isDone(x[0])).map(x=>x[0]);
