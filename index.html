@@ -203,6 +203,10 @@ button.stt.okb{color:var(--ok)}
 .al{list-style:none;margin:0;padding:2px 12px 8px;display:flex;flex-wrap:wrap;gap:4px 6px}.al li{font-size:13px;border:1px solid var(--rule);border-radius:99px;padding:2px 9px;background:var(--bg)}
 .sq.v.wp{background:var(--bg);border:3px solid var(--blue);color:var(--blue)}
 .sq.m.wp{background:var(--bg);border:3px solid var(--red);color:var(--red)}
+.fin{display:inline-block;margin-left:6px;font-size:10px;font-weight:800;letter-spacing:.05em;background:var(--ink);color:var(--bg);border-radius:4px;padding:1px 6px;vertical-align:middle}
+#ov .ol .on1{display:flex;align-items:center;min-width:0}.on1 .nt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.on1 .fin{flex:none}
+.finn{font-size:14px;margin:10px 0 0;line-height:1.5}.finn:empty{display:none}
+.on1 .nt{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.15}
 </style>
 </head>
 <body>
@@ -211,7 +215,7 @@ button.stt.okb{color:var(--ok)}
 <div class="top"><h1>Tablero de listos · D13</h1><span class="st w" id="st">Conectando…</span></div>
 <p class="sub">Sábado 28 de noviembre de 2026 · El Juicio · Toca una casilla cuando el paso esté terminado. «Listo» se enciende solo cuando están todos los pasos.</p>
 <div class="bar" style="margin-top:12px"><i id="barf" style="width:0"></i></div><div class="tiles" id="tiles"></div>
-<div class="keys" id="keys"></div>
+<div class="keys" id="keys"></div><div class="finn" id="finn"></div>
 </div></header>
 <nav><div class="tabin">
 <div class="seg"><a class="tab" id="t-r" href="#resumen">Resumen</a><a class="tab" id="t-m" href="#talentos">Talentos</a><a class="tab" id="t-a" href="#arte">Arte</a><a class="tab" id="t-b" href="#ajustes">Ajustes</a></div>
@@ -263,7 +267,7 @@ const dfl=sid=>'DF '+DF[sid];
 let scenes=scenes0.slice();
 let order=Object.fromEntries(scenes.map((s,i)=>[s[0],i]));
 const rows=[];
-cast.forEach(c=>rows.push({id:'t'+c[0],k:'t',n:c[0],name:c[1],act:c[2],qty:1,sc:Object.fromEntries(c[3].map(s=>[s,1])),pv:c[4],pm:c[5],lis:c[6]}));
+cast.forEach(c=>rows.push({fin:!!c[7],id:'t'+c[0],k:'t',n:c[0],name:c[1],act:c[2],qty:1,sc:Object.fromEntries(c[3].map(s=>[s,1])),pv:c[4],pm:c[5],lis:c[6]}));
 grp.forEach(g=>g[4].forEach((e,i)=>rows.push({id:'x'+g[0]+i,k:'x',g:g[0],name:e[0],qty:e[1],sc:e[2],pv:g[1],pm:g[1],lis:g[3]})));
 rows.forEach(r=>{r.q0=r.qty;r.sc0={...r.sc};r.scAll={...r.sc};if(r.k==='t')r.ll=r.n===1?'6:00':'6:00'});
 const byId=Object.fromEntries(rows.map(r=>[r.id,r]));
@@ -381,7 +385,7 @@ function wrapStrip(){
 function overview(){
  return wrapStrip()+vsc().map(sc=>{const sid=sc[0],st=sceneStat(sid),p=pct(st),us=st.us.slice().sort((a,b)=>(a.r.k==='t'?0:1)-(b.r.k==='t'?0:1));
   const lines=us.map(u=>{const r=u.r,ok=okU(r,sid);
-   return `<div class="ol${ok?' ok':''}"><button class="on1 nb" data-go="${sid}"><em>${r.k==='t'?r.n:u.need+'×'}</em>${r.name}</button><span class="sqs">${sqs(r,sid)}</span>${wrb(r)}</div>`}).join('');
+   return `<div class="ol${ok?' ok':''}"><button class="on1 nb" data-go="${sid}"><em>${r.k==='t'?r.n:u.need+'×'}</em><span class="nt">${r.name}</span></button><span class="sqs">${sqs(r,sid)}</span>${wrb(r)}</div>`}).join('');
   if(isDone(sid))return `<div class="oc2 closed" id="sc-${sid}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">CERRADA ✓</span></button>${cgente(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Reabrir escena</button></div>`;
   return `<div class="oc2${st.done?' ok':''}" id="sc-${sid}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn">${st.done?'LISTA ✓':st.sg+'/'+st.sn}</span><i style="width:${p}%"></i></button>${lines}${wrLines(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Cerrar escena</button></div>`}).join('');
 }
@@ -389,9 +393,9 @@ function talentos(k){
  return rows.filter(r=>r.k===k).sort((a,b)=>(isWr(b)?1:0)-(isWr(a)?1:0)||(sortBy==='name'?a.name.localeCompare(b.name,'es'):(a.k==='t'?a.n-b.n:rows.indexOf(a)-rows.indexOf(b)))).map(r=>{
   const w=wrapN(r),full=w>=r.qty;
   const wc=ro()?'':(r.qty===1?`<button class="wb${full?' on':''}" data-wr="${r.id}:${full?-1:1}">${full?'Quitar wrap':'Wrap'}</button>`:`<span class="stp wst"><button data-wr="${r.id}:-1" aria-label="menos wrap">−</button><b>Wrap ${w}/${r.qty}</b><button data-wr="${r.id}:1" aria-label="más wrap">+</button></span>`);
-  const hd=`<span class="num">${r.k==='t'?r.n:r.qty+'×'}</span><div><b>${r.name}</b><div class="who">${r.k==='t'?r.act:'Extras · '+r.qty+(r.qty>1?' personas':' persona')+(w>0?' · '+w+' con wrap':'')}</div></div>`;
+  const hd=`<span class="num">${r.k==='t'?r.n:r.qty+'×'}</span><div><b>${r.name}${r.fin?'<span class="fin">FIN</span>':''}</b><div class="who">${r.k==='t'?r.act:'Extras · '+r.qty+(r.qty>1?' personas':' persona')+(w>0?' · '+w+' con wrap':'')}</div></div>`;
   if(full){const ss=Object.keys(r.scAll).sort((a,b)=>order[a]-order[b]);
-   return `<div class="tc wrap cp"><span class="num">${r.k==='t'?r.n:r.qty+'×'}</span><div class="cpn"><b>${r.name}</b><small>${r.k==='t'?r.act:'Extras'}</small><div class="wsc">${ss.map(x=>isDone(x)?`<span class="wc1 cl1">Esc. ${x} ✓ cerrada</span>`:`<span class="wc1">Esc. ${x} abierta</span>`).join('')||'—'}</div></div><span class="wtag">WRAP</span>${wc}</div>`}
+   return `<div class="tc wrap cp"><span class="num">${r.k==='t'?r.n:r.qty+'×'}</span><div class="cpn"><b>${r.name}</b><small>${r.k==='t'?r.act:'Extras'}${r.fin?' · <b class="fin">FIN</b> no vuelve a rodar':''}</small><div class="wsc">${ss.map(x=>isDone(x)?`<span class="wc1 cl1">Esc. ${x} ✓ cerrada</span>`:`<span class="wc1">Esc. ${x} abierta</span>`).join('')||'—'}</div></div><span class="wtag">WRAP</span>${wc}</div>`}
   const all0=scs(r),all=all0.filter(x=>!isDone(x)),n=all.filter(x=>okU(r,x)).length,list=all0.filter(x=>isDone(x)||!onlyP||!okU(r,x)).sort((a,b)=>(isDone(a)?1:0)-(isDone(b)?1:0));
   const lines=list.length?list.map(sid=>{const sc=scenes.find(x=>x[0]===sid),ok=okU(r,sid);
    if(isDone(sid))return `<div class="ol cl"><span class="on1 sl"><b>Esc. ${sid}</b><small>${dfl(sid)} · ${sc[1]}</small></span><span></span><span class="stt" style="color:var(--ok)">CERRADA</span></div>`;
@@ -431,7 +435,7 @@ function render(){
 $('#srt').innerHTML=`<span>Ordenar por:</span><button class="sb${sortBy==='id'?' on':''}" data-sort="id">Número</button><button class="sb${sortBy==='name'?' on':''}" data-sort="name">Nombre</button>`;$('#mx').innerHTML=talentos('t');$('#mx2').innerHTML=talentos('x')||'<p class="who">Hoy no hay extras.</p>';
  $('#tiles').innerHTML=scenes.map(x=>{const st=sceneStat(x[0]),cd=isDone(x[0]),p=pct(st);
   return `<button class="tl${cd?' cl':st.done?' ok':''}" data-go="${x[0]}" title="Escena ${x[0]} · ${cd?'cerrada':st.done?'lista':st.sg+' de '+st.sn+' pasos'}" style="--p:${cd?0:p}%">${x[0]}</button>`}).join('');
- $('#ov').innerHTML=overview();$('#art').innerHTML=arte();$('#lg1').innerHTML=legend();$('#lg2').innerHTML=legend();
+ $('#ov').innerHTML=overview();{const f=rows.filter(r=>r.fin&&!isWr(r));$('#finn').innerHTML=f.length?`<b class="fin" style="margin:0">FIN</b> Hoy termina la película: ${f.map(r=>r.name+' ('+r.act+')').join(' · ')}`:''}$('#art').innerHTML=arte();$('#lg1').innerHTML=legend();$('#lg2').innerHTML=legend();
  $('#bpills').innerHTML=!rows.some(r=>r.k==='x')?'':scenes.map(x=>`<button class="pill${bsel===x[0]?' sel':''}" data-bpick="${x[0]}"><b>${x[0]}</b><span>${rows.filter(r=>r.k==="x").reduce((a,r)=>a+(r.scAll[x[0]]||0),0)} extras</span></button>`).join('');
  $('#bank').innerHTML=bank();
  $('#ord').innerHTML=ro()?'<p class="who">Solo lectura.</p>':scenes.map((x,i)=>`<div class="od"><span class="on">${i+1}</span><div class="ot"><b>Escena ${x[0]}</b><small>${dfl(x[0])} · ${x[1]}</small></div><button class="mv" data-mv="${x[0]}:-1" aria-label="Subir"${i===0?' disabled':''}>▲</button><button class="mv" data-mv="${x[0]}:1" aria-label="Bajar"${i===scenes.length-1?' disabled':''}>▼</button></div>`).join('')+'<button class="foot-b" data-mv="reset">Volver al orden original</button>';
