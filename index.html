@@ -199,6 +199,7 @@ button.stt.okb{color:var(--ok)}
 .lgt{width:100%;font-style:normal;font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);margin-top:6px}
 .lg span{white-space:normal}.lgw2{font-style:normal;font-weight:700;font-size:12px;border:2px solid var(--rule);border-radius:8px;padding:6px 10px;color:var(--mute);background:var(--bg)}
 .tl.mini{display:inline-flex;align-items:center;justify-content:center;width:34px;height:28px;font-size:13px;border-width:2px;cursor:default;font-style:normal}.tl.mini.ok{border-width:3px}
+.dgt{overflow-x:auto;margin:0 0 12px;border:1px solid var(--rule);border-radius:10px}.dgt table{border-collapse:collapse;width:100%;min-width:640px;font-size:13px}.dgt th{background:var(--bg2,#f3efe8);font-size:11px;letter-spacing:.04em;text-transform:uppercase;padding:6px 8px;border-bottom:1px solid var(--rule);text-align:center}.dgt td{padding:8px;border-bottom:1px solid var(--rule);text-align:center;white-space:nowrap}.dgt tr:last-child td{border-bottom:0}.dgt td.l{text-align:left;white-space:normal;font-weight:700;font-size:12px}.dgt td.mc{color:var(--blue);font-weight:700}.syn{padding:6px 12px 8px;font-size:14px;font-style:italic;color:var(--mut,#666)}
 .at{font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase;padding:8px 12px 2px;border-top:1px solid var(--rule);color:var(--ink)}
 .al{list-style:none;margin:0;padding:2px 12px 8px;display:flex;flex-wrap:wrap;gap:4px 6px}.al li{font-size:13px;border:1px solid var(--rule);border-radius:99px;padding:2px 9px;background:var(--bg)}
 .sq.v.wp{background:var(--bg);border:3px solid var(--blue);color:var(--blue)}
@@ -218,13 +219,13 @@ button.stt.okb{color:var(--ok)}
 <div class="keys" id="keys"></div><div class="finn" id="finn"></div>
 </div></header>
 <nav><div class="tabin">
-<div class="seg"><a class="tab" id="t-r" href="#resumen">Resumen</a><a class="tab" id="t-m" href="#talentos">Talentos</a><a class="tab" id="t-a" href="#arte">Arte</a><a class="tab" id="t-b" href="#ajustes">Ajustes</a></div>
+<div class="seg"><a class="tab" id="t-r" href="#resumen">Resumen</a><a class="tab" id="t-m" href="#talentos">Talentos</a><a class="tab" id="t-a" href="#desglose">Desglose</a><a class="tab" id="t-b" href="#ajustes">Ajustes</a></div>
 <button class="tg" id="pend" aria-pressed="false">Solo pendientes</button>
 </div></nav>
 <main class="band"><div class="wrap">
 <section class="view" id="v-r"><h2 style="margin-top:6px">Todo el día de un vistazo</h2><p class="who" style="margin:0 0 8px">Una tarjeta por escena con todas las personas que salen en ella. Toca una escena o una persona para abrirla.</p><div class="ovg" id="ov"></div><div class="lgw" id="lg1"></div></section>
 <section class="view" id="v-b"><h2 style="margin-top:6px">Orden de las escenas</h2><p class="who" style="margin:0 0 8px">Mueve una escena con las flechas. Cambia el orden en todas las pestañas y se guarda para todos.</p><div id="ord"></div><h2 style="margin-top:32px">Banco de extras</h2><p class="who" style="margin:0 0 10px">Elige la escena y cambia cuántos extras necesitas de cada rol (0 = no sale) y cuántos tienes en set. Se guarda para todos.</p><div class="pills" id="bpills"></div><div id="bank"></div></section>
-<section class="view" id="v-a"><h2 style="margin-top:6px">Arte: qué lleva cada escena</h2><p class="who" style="margin:0 0 8px">Solo para consultar: set dressing y props por escena. Las escenas cerradas pasan al final.</p><div class="ovg" id="art"></div></section>
+<section class="view" id="v-a"><h2 style="margin-top:6px">Desglose del día</h2><p class="who" style="margin:0 0 8px">Solo para consultar. Llamado de talentos y, por escena, todo su desglose. Las escenas cerradas pasan al final.</p><div class="dgt" id="llam"></div><div class="ovg" id="art"></div></section>
 <section class="view" id="v-m"><h2 style="margin-top:6px">Talentos y extras: todas sus escenas</h2><p class="who" style="margin:0 0 4px">Cada cuadro es un talento o un rol de extras con las escenas en las que sale. Marca vestuario (V), maquillaje (M) y micrófono (Mic) por escena.</p><div class="srt" id="srt"></div><h2 style="margin:12px 0 0">Talentos</h2><div class="tgrid" id="mx"></div><h2 style="margin:28px 0 0">Extras</h2><div class="tgrid" id="mx2"></div><div id="lg2"></div></section>
 
 <div class="foot"><span id="note">Los datos del plan salen del llamado D13. Las marcas se guardan al tocar.</span><button id="reset">Reiniciar marcas del día</button></div>
@@ -252,6 +253,11 @@ const nowM=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
 const A15='15',A17='17',A29='29',ALL=['15','17','29'];
 const sd=[['Tranca de madera puerta',['15','17']],['Lámparas de aceite',['15','17']],['Cortinas',['15','29']],['Bandera dominicana doblada',['15','29']],['Biblia',['15','29']],['Aguja',ALL],['Baúles',ALL],['Hilos',ALL],['Libros',ALL],['Muebles',ALL],['Pequeño baúl',ALL],['Puerta de la casa',ALL],['Repisa',ALL],['Retazos de tela',ALL],['Telas color azul, rojo y blanco',ALL],['Mesa de madera',ALL],['Periódicos',ALL],['Sillas',ALL],['Cortinas cerradas',['17']],['Telas',['17']],['Puesto de café del espía',['17']],['Lámpara de aceite consumida',['29']]];
 const pr=[['Aguja',['15']],['Cose una camisa blanca',['15']],['Hilo',['15']],['Granos de café',['15']],['Pan',['15']],['Paquete en tela (café y pan)',['15']],['Taza de café',['17']],['Café',['17']],['Cera para sellar',['17']],['Sellador',['17']],['Documentos del cofre',['17']],['Vela de cera',['17','29']],['Tinta y pluma de María',['17','29']],['Cofre de madera de María',['17','29']],['Elementos de costurera 1845',['29']],['Rosario de madera',['29']]];
+const sy={'15':'Ángel lleva paquete a María','17':'Ángel alerta a María que hay un espía vigilando su casa','29':'Ángel le propone a María que se vaya de la ciudad'};
+const dgV=[['Sombrero de Ángel',ALL]];
+const dgP=[['Brisa mueve tela',['15']],['Extintor',['15','29']]];
+const dgS=[['Paso de soldados por la calle',['15']],['Golpe en la puerta',['15']],['Galope de caballos',['29']],['Pisadas en escalones',['29']]];
+const callT={1:['6:00','6:00','8:00','W'],2:['6:00','6:00','8:00','W']};
 const artOf=(L,sid)=>L.filter(x=>x[1].includes(sid)).map(x=>x[0]);
 /* ---- datos del llamado ---- */
 const cast=[
@@ -376,9 +382,12 @@ function wrLines(sid){return rows.filter(r=>isWr(r)&&r.scAll[sid]).map(r=>`<div 
 function cgente(sid){
  const rs=rows.filter(r=>r.scAll[sid]),t=rs.filter(r=>r.k==='t').map(r=>r.name+' ('+r.act+')'+(isWr(r)?' · WRAP':'')),x=rs.filter(r=>r.k==='x').map(r=>r.scAll[sid]+'× '+r.name);
  return `<div class="cg"><div><b>Talentos:</b> ${t.join(' · ')||'—'}</div>${x.length?`<div><b>Extras:</b> ${x.join(' · ')}</div>`:''}</div>`}
-function arte(){return vsc().map(sc=>{const sid=sc[0],cd=isDone(sid),a=artOf(sd,sid),b=artOf(pr,sid);
+function llamado(){const ts=rows.filter(r=>r.k==='t'),sc=scenes.map(x=>x[0]);
+ const mic='<svg width="11" height="14" viewBox="0 0 11 14" style="vertical-align:-2px;margin-right:3px"><rect x="3.5" y="0.5" width="4" height="8" rx="2" fill="currentColor"/><path d="M1.5 6.5a4 4 0 0 0 8 0M5.5 10.5V13" stroke="currentColor" fill="none" stroke-width="1.2"/></svg>';
+ return `<table><tr><th>Rol</th><th>Nombre</th><th>SWF</th>${sc.map(x=>`<th>${x}</th>`).join('')}<th>Llamado</th><th>Desayuno</th><th>Vest.</th><th>Maq.</th><th>Listo</th><th>En set</th></tr>${ts.map(r=>{const c=callT[r.n]||['','','',''];return `<tr><td class="l">${r.n}- ${r.name}</td><td>${r.act}</td><td>${r.fin?'<b class="fin" style="margin:0">F</b>':c[3]}</td>${sc.map(x=>`<td class="mc">${r.scAll[x]?mic+x:'—'}</td>`).join('')}<td>${c[0]}</td><td>${c[1]}</td><td>${r.pv}</td><td>${r.pm}</td><td>${r.lis}</td><td>${c[2]}</td></tr>`}).join('')}</table>`}
+function arte(){return vsc().map(sc=>{const sid=sc[0],cd=isDone(sid),a=artOf(sd,sid),b=artOf(pr,sid),dv=artOf(dgV,sid),dp=artOf(dgP,sid),ds=artOf(dgS,sid);
  const li=L=>L.length?`<ul class="al">${L.map(x=>`<li>${x}</li>`).join('')}</ul>`:'<p class="who" style="margin:4px 12px">—</p>';
- return `<div class="oc2${cd?' closed':''}"><div class="och" style="cursor:default"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">${cd?'CERRADA ✓':''}</span></div><div class="at">Set dressing · ${a.length}</div>${li(a)}<div class="at">Props · ${b.length}</div>${li(b)}</div>`}).join('')}
+ return `<div class="oc2${cd?' closed':''}"><div class="och" style="cursor:default"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">${cd?'CERRADA ✓':''}</span></div>${sy[sid]?`<div class="syn">${sy[sid]}</div>`:''}${cgente(sid)}${dv.length?`<div class="at">Vestuario · ${dv.length}</div>${li(dv)}`:''}${dp.length?`<div class="at">Producción · ${dp.length}</div>${li(dp)}`:''}${ds.length?`<div class="at">Sonido · ${ds.length}</div>${li(ds)}`:''}<div class="at">Set dressing · ${a.length}</div>${li(a)}<div class="at">Props · ${b.length}</div>${li(b)}</div>`}).join('')}
 function wrapStrip(){
  const w=rows.filter(r=>wrapN(r)>0).map(r=>r.k==='t'?r.name+' ('+r.act+')':r.name+' ('+wrapN(r)+' de '+r.qty+')');
  return w.length?`<div class="wrp"><b>WRAP:</b> ${w.join(' · ')}</div>`:''}
@@ -435,7 +444,7 @@ function render(){
 $('#srt').innerHTML=`<span>Ordenar por:</span><button class="sb${sortBy==='id'?' on':''}" data-sort="id">Número</button><button class="sb${sortBy==='name'?' on':''}" data-sort="name">Nombre</button>`;$('#mx').innerHTML=talentos('t');$('#mx2').innerHTML=talentos('x')||'<p class="who">Hoy no hay extras.</p>';
  $('#tiles').innerHTML=scenes.map(x=>{const st=sceneStat(x[0]),cd=isDone(x[0]),p=pct(st);
   return `<button class="tl${cd?' cl':st.done?' ok':''}" data-go="${x[0]}" title="Escena ${x[0]} · ${cd?'cerrada':st.done?'lista':st.sg+' de '+st.sn+' pasos'}" style="--p:${cd?0:p}%">${x[0]}</button>`}).join('');
- $('#ov').innerHTML=overview();{const f=rows.filter(r=>r.fin&&!isWr(r));$('#finn').innerHTML=f.length?`<b class="fin" style="margin:0">FIN</b> Hoy termina la película: ${f.map(r=>r.name+' ('+r.act+')').join(' · ')}`:''}$('#art').innerHTML=arte();$('#lg1').innerHTML=legend();$('#lg2').innerHTML=legend();
+ $('#ov').innerHTML=overview();{const f=rows.filter(r=>r.fin&&!isWr(r));$('#finn').innerHTML=f.length?`<b class="fin" style="margin:0">FIN</b> Hoy termina la película: ${f.map(r=>r.name+' ('+r.act+')').join(' · ')}`:''}$('#art').innerHTML=arte();$('#llam').innerHTML=llamado();$('#lg1').innerHTML=legend();$('#lg2').innerHTML=legend();
  $('#bpills').innerHTML=!rows.some(r=>r.k==='x')?'':scenes.map(x=>`<button class="pill${bsel===x[0]?' sel':''}" data-bpick="${x[0]}"><b>${x[0]}</b><span>${rows.filter(r=>r.k==="x").reduce((a,r)=>a+(r.scAll[x[0]]||0),0)} extras</span></button>`).join('');
  $('#bank').innerHTML=bank();
  $('#ord').innerHTML=ro()?'<p class="who">Solo lectura.</p>':scenes.map((x,i)=>`<div class="od"><span class="on">${i+1}</span><div class="ot"><b>Escena ${x[0]}</b><small>${dfl(x[0])} · ${x[1]}</small></div><button class="mv" data-mv="${x[0]}:-1" aria-label="Subir"${i===0?' disabled':''}>▲</button><button class="mv" data-mv="${x[0]}:1" aria-label="Bajar"${i===scenes.length-1?' disabled':''}>▼</button></div>`).join('')+'<button class="foot-b" data-mv="reset">Volver al orden original</button>';
@@ -459,7 +468,7 @@ document.addEventListener('click',e=>{
  if(e.target.closest('#reset')&&!ro()){if(!armed){armed=true;render();setTimeout(()=>{armed=false;render()},5000);return}
   armed=false;rows.forEach(r=>{const d=doc(r.id);if(Object.keys(d.s).length||S[r.id])write(r.id,{req:d.req,s:Object.fromEntries(Object.entries(d.s).filter(e=>e[1]&&e[1].rq!=null).map(e=>[e[0],{ves:0,maq:0,mic:0,t:{},rq:e[1].rq}]))})});render()}
 });
-const route=()=>{const h=location.hash.slice(1),v={talentos:'m',todos:'m',matriz:'m',banco:'b',ajustes:'b',arte:'a'}[h]||'r';
+const route=()=>{const h=location.hash.slice(1),v={talentos:'m',todos:'m',matriz:'m',banco:'b',ajustes:'b',arte:'a',desglose:'a'}[h]||'r';
  ['r','m','a','b'].forEach(k=>{$('#v-'+k).classList.toggle('on',k===v);$('#t-'+k).setAttribute('aria-current',k===v?'page':'false')});
  $('#pend').style.display=v==='m'?'':'none'};
 addEventListener('hashchange',route);route();render();
