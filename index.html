@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tablero de listos D13</title>
+<title>Tablero de listos D14</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
 <style>
@@ -215,8 +215,8 @@ button.stt.okb{color:var(--ok)}
 <body>
 <div class="flagbar"></div>
 <header class="band"><div class="wrap">
-<div class="top"><h1>Tablero de listos · D13</h1><span class="st w" id="st">Conectando…</span></div>
-<p class="sub">Sábado 28 de noviembre de 2026 · El Juicio · Toca una casilla cuando el paso esté terminado. «Listo» se enciende solo cuando están todos los pasos.</p>
+<div class="top"><h1>Tablero de listos · D14</h1><span class="st w" id="st">Conectando…</span></div>
+<p class="sub">Domingo 29 de noviembre de 2026 · El Juicio · Toca una casilla cuando el paso esté terminado. «Listo» se enciende solo cuando están todos los pasos.</p>
 <div class="bar" style="margin-top:12px"><i id="barf" style="width:0"></i></div><div class="tiles" id="tiles"></div>
 <div class="keys" id="keys"></div><div class="finn" id="finn"></div>
 </div></header>
@@ -230,7 +230,7 @@ button.stt.okb{color:var(--ok)}
 <section class="view" id="v-a"><h2 style="margin-top:6px">Desglose del día</h2><p class="who" style="margin:0 0 8px">Solo para consultar. Llamado de talentos y, por escena, todo su desglose. Las escenas cerradas pasan al final.</p><div class="dgt" id="llam"></div><div class="ovg" id="art"></div></section>
 <section class="view" id="v-m"><h2 style="margin-top:6px">Talentos y extras: todas sus escenas</h2><p class="who" style="margin:0 0 4px">Cada cuadro es un talento o un rol de extras con las escenas en las que sale. Marca vestuario (V), maquillaje (M) y micrófono (Mic) por escena.</p><div class="srt" id="srt"></div><h2 style="margin:12px 0 0">Talentos</h2><div class="tgrid" id="mx"></div><h2 style="margin:28px 0 0">Extras</h2><div class="tgrid" id="mx2"></div><div id="lg2"></div></section>
 
-<div class="foot"><span id="note">Los datos del plan salen del llamado D13. Las marcas se guardan al tocar.</span><button id="reset">Reiniciar marcas del día</button></div>
+<div class="foot"><span id="note">Los datos del plan salen del llamado D14. Las marcas se guardan al tocar.</span><button id="reset">Reiniciar marcas del día</button></div>
 </div></main>
 <script>
 {
@@ -252,25 +252,29 @@ const hhmm=()=>{const d=new Date();return d.getHours()+':'+pad(d.getMinutes())};
 const today=()=>{const d=new Date();return d.getFullYear()===2026&&d.getMonth()===10&&d.getDate()===23};
 const nowM=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
 /* ---- arte (set dressing y props, del desglose del llamado) ---- */
-const A15='15',A17='17',A29='29',ALL=['15','17','29'];
-const sd=[['Tranca de madera puerta',['15','17']],['Lámparas de aceite',['15','17']],['Cortinas',['15','29']],['Bandera dominicana doblada',['15','29']],['Biblia',['15','29']],['Aguja',ALL],['Baúles',ALL],['Hilos',ALL],['Libros',ALL],['Muebles',ALL],['Pequeño baúl',ALL],['Puerta de la casa',ALL],['Repisa',ALL],['Retazos de tela',ALL],['Telas color azul, rojo y blanco',ALL],['Mesa de madera',ALL],['Periódicos',ALL],['Sillas',ALL],['Cortinas cerradas',['17']],['Telas',['17']],['Puesto de café del espía',['17']],['Lámpara de aceite consumida',['29']]];
-const pr=[['Aguja',['15']],['Cose una camisa blanca',['15']],['Hilo',['15']],['Granos de café',['15']],['Pan',['15']],['Paquete en tela (café y pan)',['15']],['Taza de café',['17']],['Café',['17']],['Cera para sellar',['17']],['Sellador',['17']],['Documentos del cofre',['17']],['Vela de cera',['17','29']],['Tinta y pluma de María',['17','29']],['Cofre de madera de María',['17','29']],['Elementos de costurera 1845',['29']],['Rosario de madera',['29']]];
-const sy={'15':'Ángel lleva paquete a María','17':'Ángel alerta a María que hay un espía vigilando su casa','29':'Ángel le propone a María que se vaya de la ciudad'};
-const dgV=[['Sombrero de Ángel',ALL]];
-const dgP=[['Brisa mueve tela',['15']],['Extintor',['15','29']]];
-const dgS=[['Paso de soldados por la calle',['15']],['Golpe en la puerta',['15']],['Galope de caballos',['29']],['Pisadas en escalones',['29']]];
-const callT={1:['6:00','6:00','8:00','W'],2:['6:00','6:00','8:00','W']};
+const ALL=['22','30','31','63'];
+const sd=[['Tranca de madera puerta',['22']],['Bandera dominicana 1845',['22']],['Bandera dominicana doblada',['22','31']],['Biblia',['22','31']],['Baúles',['22','30','31']],['Cortinas',['22','30','31']],['Aguja',ALL],['Hilos',ALL],['Libros',ALL],['Muebles',ALL],['Puerta de la casa',ALL],['Repisa',ALL],['Retazos de tela',ALL],['Telas color azul, rojo y blanco',ALL],['Lámparas de aceite',ALL],['Mesa de madera',ALL],['Sillas',ALL],['Pequeño baúl',['30','31']],['Periódicos',['31']],['Baúl chal de María',['31']],['Casa de María Trinidad con polvo',['63']],['Cortinas cerradas',['63']],['Objetos con polvo',['63']]];
+const pr=[['Bandera dominicana doblada 1845',['22']],['Cose una camisa blanca',['22']],['Orden de registro del Capitán',['22']],['Vela de cera',ALL],['Tinta y pluma de María',ALL],['Cofre de madera de María',ALL],['Elementos de costurera 1845',['30','31']],['Rosario de madera',['30','31']],['Orden de arresto del Capitán',['30','31']]];
+const sy={'22':'Capitán y soldados registran la casa de María Trinidad','30':'El Capitán llega con orden de arresto para María','31':'María es arrestada y se despide de Ángel','63':'Meses después: Ángel guarda la aguja, queda el retazo tricolor'};
+const dgV=[['Sombrero del Capitán',['22','30','31']],['Sombrero de Ángel',['30','31','63']],['Chal blanco',['31']]];
+const dgA=[['4× armas de soldados 1845',['22','30','31']],['Arma del Capitán',['22','30','31']]];
+const dgC=[['POV: María ve que los soldados van a diferentes puntos a vigilar su casa',['22']],['Haze',['63']]];
+const dgP=[['Extintor',ALL]];
+const dgS=[];
+const callT={1:['6:00','6:00','8:00','W'],3:['6:00','6:00','8:00','WF'],2:['7:00','7:00','Llamado','W']};
 const artOf=(L,sid)=>L.filter(x=>x[1].includes(sid)).map(x=>x[0]);
 /* ---- datos del llamado ---- */
 const cast=[
-[1,'María Trinidad Sánchez','Ruth Emeterio',['15','17','29'],'7:00','6:30','7:30'],
-[2,'Ángel','Iván Díaz',['15','17','29'],'6:30','7:00','7:30']];
-const grp=[];
+[1,'María Trinidad Sánchez','Ruth Emeterio',['22','30','31'],'6:30','7:00','7:30'],
+[3,'Capitán','Fremy Feliz',['22','30','31'],'7:00','6:30','7:30',1],
+[2,'Ángel','Iván Díaz',['30','31','63'],'8:00','7:30','8:30']];
+const grp=[['A','6:30','6:30','7:30',[['Soldados casa María',2,{'22':2,'30':2,'31':2}]]],['B','7:30','7:30','8:30',[['Soldados calle 1845',2,{'30':2,'31':2}]]]];
 const scenes0=[
-['15','Casa de María Trinidad 1845 · interior','Ángel lleva el paquete a María.'],
-['17','Casa de María Trinidad 1845 · interior','Ángel alerta a María de que un espía vigila su casa.'],
-['29','Casa de María Trinidad 1845 · interior','Ángel le propone a María que se vaya de la ciudad.']];
-const DF={'15':'5','17':'5','29':'8'};
+['22','Casa de María Trinidad 1845 · interior','El Capitán y los soldados registran la casa de María Trinidad.'],
+['30','Casa de María Trinidad 1845 · interior','El Capitán llega con orden de arresto para María.'],
+['31','Casa de María Trinidad 1845 · interior','María es arrestada y se despide de Ángel.'],
+['63','Casa de María Trinidad 1845 · interior','Meses después: Ángel guarda la aguja, queda el retazo tricolor.']];
+const DF={'22':'6','30':'8','31':'8','63':'15'};
 const dfl=sid=>'DF '+DF[sid];
 let scenes=scenes0.slice();
 let order=Object.fromEntries(scenes.map((s,i)=>[s[0],i]));
@@ -299,7 +303,7 @@ const scs=r=>Object.keys(r.sc).sort((a,b)=>order[a]-order[b]);
 const units=()=>rows.flatMap(r=>scs(r).map(s=>({r,s,need:r.sc[s]})));
 const tot=()=>units().reduce((a,u)=>a+u.need,0);
 /* ---- estado: una ficha por persona y, dentro, una por escena ---- */
-let sortBy='id';let S={},mode='local',sel='15',bsel='15',onlyP=false,armed=false,db=null;
+let sortBy='id';let S={},mode='local',sel='22',bsel='22',onlyP=false,armed=false,db=null;
 const zu=()=>({ves:0,maq:0,mic:0,vw:0,mw:0,t:{}});
 function doc(id){const d=S[id]||{};if(d.s)return{req:!!d.req,s:d.s};
  const r=byId[id],o={req:!!d.req,s:{}};
@@ -315,8 +319,8 @@ const setStatus=(t,w)=>{const e=$('#st');e.textContent=t;e.className='st'+(w?' w
 function fail(e){if(e&&e.code==='invalid_argument'){mode='ro';setStatus('Solo lectura',1);render()}else setStatus('Sin conexión, reintenta',1)}
 function write(id,obj){
  S[id]=obj;render();
- if(mode==='live'&&db){q[id]=(q[id]||Promise.resolve()).then(()=>db.doc('estado13c/'+id).set(obj)).catch(fail)}
- else if(mode==='local'){try{localStorage.setItem('d13cestado',JSON.stringify(S))}catch(e){}}
+ if(mode==='live'&&db){q[id]=(q[id]||Promise.resolve()).then(()=>db.doc('estado14/'+id).set(obj)).catch(fail)}
+ else if(mode==='local'){try{localStorage.setItem('d14estado',JSON.stringify(S))}catch(e){}}
 }
 function act(id,sid,a){
  if(ro())return;const r=byId[id],d=JSON.parse(JSON.stringify(doc(id))),T=r.sc[sid],s=hhmm();
@@ -332,8 +336,8 @@ function act(id,sid,a){
  write(id,d);
 }
 function saveCfg(){applyCfg();render();
- if(mode==='live'&&db){q.cfg=(q.cfg||Promise.resolve()).then(()=>db.doc('cfg13c/ajustes').set(cfg)).catch(fail)}
- else if(mode==='local'){try{localStorage.setItem('d13ccfg',JSON.stringify(cfg))}catch(e){}}}
+ if(mode==='live'&&db){q.cfg=(q.cfg||Promise.resolve()).then(()=>db.doc('cfg14/ajustes').set(cfg)).catch(fail)}
+ else if(mode==='local'){try{localStorage.setItem('d14cfg',JSON.stringify(cfg))}catch(e){}}}
 function moveScene(id,d){const ids=scenes.map(x=>x[0]),i=ids.indexOf(id),j=i+d;if(j<0||j>=ids.length)return;
  [ids[i],ids[j]]=[ids[j],ids[i]];cfg={...cfg,order:ids};saveCfg()}
 function resetOrder(){cfg={...cfg};delete cfg.order;saveCfg()}
@@ -388,13 +392,13 @@ function cgente(sid){
  return `<div class="cg"><div><b>Talentos:</b> ${t.join(' · ')||'—'}</div>${x.length?`<div><b>Extras:</b> ${x.join(' · ')}</div>`:''}</div>`}
 function llamado(){const ts=rows.filter(r=>r.k==='t'),sc=scenes.map(x=>x[0]);
  const mic='<svg width="11" height="14" viewBox="0 0 11 14" style="vertical-align:-2px;margin-right:3px"><rect x="3.5" y="0.5" width="4" height="8" rx="2" fill="currentColor"/><path d="M1.5 6.5a4 4 0 0 0 8 0M5.5 10.5V13" stroke="currentColor" fill="none" stroke-width="1.2"/></svg>';
- return `<table><tr><th>Rol</th><th>Nombre</th><th>SWF</th>${sc.map(x=>`<th>${x}</th>`).join('')}</tr>${ts.map(r=>{const c=callT[r.n]||['','','',''];return `<tr><td class="l">${r.n}- ${r.name}</td><td>${r.act}</td><td>${r.fin?'<b class="fin" style="margin:0">F</b>':c[3]}</td>${sc.map(x=>`<td class="mc${isDone(x)?' dn':''}">${r.scAll[x]?mic+x:'—'}</td>`).join('')}</tr>`}).join('')}</table>${xt(sc)}`}
+ return `<table><tr><th>Rol</th><th>Nombre</th><th>SWF</th>${sc.map(x=>`<th>${x}</th>`).join('')}</tr>${ts.map(r=>{const c=callT[r.n]||['','','',''];return `<tr><td class="l">${r.n}- ${r.name}</td><td>${r.act}</td><td>${r.fin?'<b class="fin" style="margin:0">'+c[3]+'</b>':c[3]}</td>${sc.map(x=>`<td class="mc${isDone(x)?' dn':''}">${r.scAll[x]?(reqU(r.id,x)?mic:'')+x:'—'}</td>`).join('')}</tr>`}).join('')}</table>${xt(sc)}`}
 function xt(sc){const xs=rows.filter(r=>r.k==='x');if(!xs.length)return'';
  return `<table style="border-top:2px solid var(--rule)"><tr><th>Cant.</th><th>Rol</th>${sc.map(x=>`<th>${x}</th>`).join('')}</tr>${xs.map(r=>`<tr><td><b>${r.qty}</b></td><td class="l">${r.name}</td>${sc.map(x=>r.scAll[x]?`<td class="mc${isDone(x)?' dn':''}">${x}<br><small>(${r.scAll[x]})</small></td>`:'<td>-</td>').join('')}</tr>`).join('')}</table><p class="who" style="margin:6px 10px">(n) = cantidad de personas en esa escena</p>`}
 function xgente(sid){const x=rows.filter(r=>r.k==='x'&&r.scAll[sid]).map(r=>r.scAll[sid]+'× '+r.name);return x.length?`<div class="cg"><b>Extras:</b> ${x.join(' · ')}</div>`:''}
-function arte(){return vsc().map(sc=>{const sid=sc[0],cd=isDone(sid),a=artOf(sd,sid),b=artOf(pr,sid),dv=artOf(dgV,sid),dp=artOf(dgP,sid),ds=artOf(dgS,sid);
+function arte(){return vsc().map(sc=>{const sid=sc[0],cd=isDone(sid),a=artOf(sd,sid),b=artOf(pr,sid),dv=artOf(dgV,sid),dp=artOf(dgP,sid),ds=artOf(dgS,sid),da=artOf(dgA,sid),dc=artOf(dgC,sid);
  const li=L=>L.length?`<ul class="al">${L.map(x=>`<li>${x}</li>`).join('')}</ul>`:'<p class="who" style="margin:4px 12px">—</p>';
- return `<div class="oc2${cd?' closed':''}"><div class="och" style="cursor:default"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">${cd?'CERRADA ✓':''}</span>${isRec(sid)?'<span class="nn rc">RODANDO</span>':''}</div>${sy[sid]?`<div class="syn">${sy[sid]}</div>`:''}${xgente(sid)}${dv.length?`<div class="at">Vestuario · ${dv.length}</div>${li(dv)}`:''}${dp.length?`<div class="at">Producción · ${dp.length}</div>${li(dp)}`:''}${ds.length?`<div class="at">Sonido · ${ds.length}</div>${li(ds)}`:''}<div class="at">Set dressing · ${a.length}</div>${li(a)}<div class="at">Props · ${b.length}</div>${li(b)}</div>`}).join('')}
+ return `<div class="oc2${cd?' closed':''}"><div class="och" style="cursor:default"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">${cd?'CERRADA ✓':''}</span>${isRec(sid)?'<span class="nn rc">RODANDO</span>':''}</div>${sy[sid]?`<div class="syn">${sy[sid]}</div>`:''}${dv.length?`<div class="at">Vestuario · ${dv.length}</div>${li(dv)}`:''}${da.length?`<div class="at">Armas · ${da.length}</div>${li(da)}`:''}${dc.length?`<div class="at">Cámara · ${dc.length}</div>${li(dc)}`:''}${dp.length?`<div class="at">Producción · ${dp.length}</div>${li(dp)}`:''}${ds.length?`<div class="at">Sonido · ${ds.length}</div>${li(ds)}`:''}<div class="at">Set dressing · ${a.length}</div>${li(a)}<div class="at">Props · ${b.length}</div>${li(b)}</div>`}).join('')}
 function wrapStrip(){
  const w=rows.filter(r=>wrapN(r)>0).map(r=>r.k==='t'?r.name+' ('+r.act+')':r.name+' ('+wrapN(r)+' de '+r.qty+')');
  return w.length?`<div class="wrp"><b>WRAP:</b> ${w.join(' · ')}</div>`:''}
@@ -484,13 +488,13 @@ addEventListener('hashchange',route);route();render();
 (async()=>{
  try{db=await window.claude?.use('db')}catch(e){db=null}
  if(!db&&!window.claude&&FB.apiKey){try{db=await fbDb()}catch(e){db=null}}
- if(!db){mode='local';try{S=JSON.parse(localStorage.getItem('d13cestado')||'{}');cfg=JSON.parse(localStorage.getItem('d13ccfg')||'{"need":{},"qty":{}}');applyCfg()}catch(e){S={}}setStatus('Solo en este teléfono',1);render();return}
+ if(!db){mode='local';try{S=JSON.parse(localStorage.getItem('d14estado')||'{}');cfg=JSON.parse(localStorage.getItem('d14cfg')||'{"need":{},"qty":{}}');applyCfg()}catch(e){S={}}setStatus('Solo en este teléfono',1);render();return}
  mode='live';
  try{const u=await window.claude?.use('user');if(u&&(await u.can('data.write'))===false)mode='ro'}catch(e){}
  setStatus(mode==='ro'?'Solo lectura':'En vivo · compartido',mode==='ro');
  const tm=setTimeout(()=>setStatus('Sin respuesta del servidor',1),10000);
- db.doc('cfg13c/ajustes').onSnapshot(d=>{cfg=d.exists?d.data():{need:{},qty:{}};applyCfg();render()},()=>{});
- db.collection('estado13c').onSnapshot(sn=>{
+ db.doc('cfg14/ajustes').onSnapshot(d=>{cfg=d.exists?d.data():{need:{},qty:{}};applyCfg();render()},()=>{});
+ db.collection('estado14').onSnapshot(sn=>{
   if(!sn.metadata.fromCache){clearTimeout(tm);setStatus(mode==='ro'?'Solo lectura':'En vivo · compartido',mode==='ro')}
   const n={};sn.docs.forEach(d=>{n[d.id]=d.data()});S=n;render()
  },err=>{clearTimeout(tm);setStatus('Sin conexión compartida',1)});
