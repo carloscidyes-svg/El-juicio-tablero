@@ -192,7 +192,8 @@ button.stt.okb{color:var(--ok)}
 .tiles{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .tl{width:48px;height:44px;border-radius:8px;border:2px solid var(--rule);background:linear-gradient(0deg,color-mix(in srgb,var(--ok) 28%,transparent) var(--p),var(--bg) var(--p));color:var(--ink);font:inherit;font-stretch:112%;font-weight:800;font-size:16px;cursor:pointer;padding:0}
 .tl.ok{border-color:var(--ok);border-width:3px;color:var(--ok)}
-.tl.rec{background:var(--red);border-color:var(--red);color:#fff}.oc2.rec{border-color:var(--red);box-shadow:0 0 0 2px var(--red)}.nn.rc{color:var(--red);font-weight:800}.recb{display:block;width:100%;min-height:44px;border:0;border-top:1px solid var(--rule);background:var(--bg);color:var(--red);font:inherit;font-weight:800;font-size:14px;cursor:pointer}.recb.on{background:var(--red);color:#fff}.recb:disabled{cursor:default;opacity:.5}
+.tl.rec{background:var(--red);border-color:var(--red);color:#fff}.oc2.rec{border-color:var(--red);box-shadow:0 0 0 2px var(--red)}.nn.rc{color:var(--red);font-weight:800}.oc2.rw{position:relative}.oc2.rw .och{padding-right:92px}.recp{position:absolute;top:8px;right:8px;height:30px;padding:0 10px;border-radius:99px;border:2px solid var(--red);background:var(--bg);color:var(--red);font:inherit;font-weight:800;font-size:12px;letter-spacing:.04em;cursor:pointer;z-index:2}.recp.on{background:var(--red);color:#fff}.recp:disabled{cursor:default;opacity:.6}
+.recb{display:block;width:100%;min-height:44px;border:0;border-top:1px solid var(--rule);background:var(--bg);color:var(--red);font:inherit;font-weight:800;font-size:14px;cursor:pointer}.recb.on{background:var(--red);color:#fff}.recb:disabled{cursor:default;opacity:.5}
 .tl.cl{background:var(--rule);border-color:var(--rule);color:var(--mute);opacity:.85}
 .wbr{min-height:40px;min-width:60px;padding:0 8px;border-radius:8px;border:2px solid var(--rule);background:var(--bg);color:var(--mute);font:inherit;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap}
 .wbr.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -289,7 +290,7 @@ function applyCfg(){
   Object.keys(all).forEach(k=>{const v=Math.min(all[k],av);if(v>0)sc[k]=v});r.sc=sc})}
 const wrapN=r=>Math.max(0,Math.min(r.qty,(cfg.wrap&&cfg.wrap[r.id])||0));
 const isWr=r=>wrapN(r)>=r.qty;
-const isRec=sid=>cfg.rec===sid&&!isDone(sid);
+const isRec=sid=>!!(cfg.recs&&cfg.recs[sid])&&!isDone(sid);
 const isDone=sid=>!!(cfg.done&&cfg.done[sid]);
 const vsc=()=>scenes.filter(x=>!isDone(x[0])).concat(scenes.filter(x=>isDone(x[0])));
 const pct=st=>st.sn?Math.round(st.sg/st.sn*100):100;
@@ -342,8 +343,8 @@ function setCfg(id,kind,d){const r=byId[id];cfg={...cfg,need:{...(cfg.need||{})}
  saveCfg()}
 function setWrap(id,d){const r=byId[id];if(!r)return;const v=Math.max(0,Math.min(r.qty,wrapN(r)+d));
  cfg={...cfg,wrap:{...(cfg.wrap||{})}};if(v>0)cfg.wrap[id]=v;else delete cfg.wrap[id];saveCfg()}
-function toggleDone(sid){cfg={...cfg,done:{...(cfg.done||{})}};if(cfg.done[sid])delete cfg.done[sid];else{cfg.done[sid]=1;if(cfg.rec===sid)delete cfg.rec}saveCfg()}
-function toggleRec(sid){cfg={...cfg};if(cfg.rec===sid)delete cfg.rec;else cfg.rec=sid;saveCfg()}
+function toggleDone(sid){cfg={...cfg,done:{...(cfg.done||{})}};if(cfg.done[sid])delete cfg.done[sid];else{cfg.done[sid]=1;if(cfg.recs&&cfg.recs[sid]){cfg.recs={...cfg.recs};delete cfg.recs[sid]}}saveCfg()}
+function toggleRec(sid){cfg={...cfg,recs:{...(cfg.recs||{})}};if(cfg.recs[sid])delete cfg.recs[sid];else cfg.recs[sid]=1;saveCfg()}
 /* ---- piezas ---- */
 function cell(r,sid,f){
  const g=getU(r.id,sid),n=g[f]||0,T=r.sc[sid],done=n>=T,dis=ro()?' disabled':'';
@@ -393,7 +394,7 @@ function xt(sc){const xs=rows.filter(r=>r.k==='x');if(!xs.length)return'';
 function xgente(sid){const x=rows.filter(r=>r.k==='x'&&r.scAll[sid]).map(r=>r.scAll[sid]+'× '+r.name);return x.length?`<div class="cg"><b>Extras:</b> ${x.join(' · ')}</div>`:''}
 function arte(){return vsc().map(sc=>{const sid=sc[0],cd=isDone(sid),a=artOf(sd,sid),b=artOf(pr,sid),dv=artOf(dgV,sid),dp=artOf(dgP,sid),ds=artOf(dgS,sid);
  const li=L=>L.length?`<ul class="al">${L.map(x=>`<li>${x}</li>`).join('')}</ul>`:'<p class="who" style="margin:4px 12px">—</p>';
- return `<div class="oc2${cd?' closed':''}"><div class="och" style="cursor:default"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">${cd?'CERRADA ✓':''}</span>${isRec(sid)?'<span class="nn rc">● GRABANDO</span>':''}</div>${sy[sid]?`<div class="syn">${sy[sid]}</div>`:''}${xgente(sid)}${dv.length?`<div class="at">Vestuario · ${dv.length}</div>${li(dv)}`:''}${dp.length?`<div class="at">Producción · ${dp.length}</div>${li(dp)}`:''}${ds.length?`<div class="at">Sonido · ${ds.length}</div>${li(ds)}`:''}<div class="at">Set dressing · ${a.length}</div>${li(a)}<div class="at">Props · ${b.length}</div>${li(b)}</div>`}).join('')}
+ return `<div class="oc2${cd?' closed':''}"><div class="och" style="cursor:default"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">${cd?'CERRADA ✓':''}</span>${isRec(sid)?'<span class="nn rc">● REC</span>':''}</div>${sy[sid]?`<div class="syn">${sy[sid]}</div>`:''}${xgente(sid)}${dv.length?`<div class="at">Vestuario · ${dv.length}</div>${li(dv)}`:''}${dp.length?`<div class="at">Producción · ${dp.length}</div>${li(dp)}`:''}${ds.length?`<div class="at">Sonido · ${ds.length}</div>${li(ds)}`:''}<div class="at">Set dressing · ${a.length}</div>${li(a)}<div class="at">Props · ${b.length}</div>${li(b)}</div>`}).join('')}
 function wrapStrip(){
  const w=rows.filter(r=>wrapN(r)>0).map(r=>r.k==='t'?r.name+' ('+r.act+')':r.name+' ('+wrapN(r)+' de '+r.qty+')');
  return w.length?`<div class="wrp"><b>WRAP:</b> ${w.join(' · ')}</div>`:''}
@@ -402,7 +403,7 @@ function overview(){
   const lines=us.map(u=>{const r=u.r,ok=okU(r,sid);
    return `<div class="ol${ok?' ok':''}"><button class="on1 nb" data-go="${sid}"><em>${r.k==='t'?r.n:u.need+'×'}</em><span class="nt">${r.name}</span></button><span class="sqs">${sqs(r,sid)}</span>${wrb(r)}</div>`}).join('');
   if(isDone(sid))return `<div class="oc2 closed" id="sc-${sid}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn" style="color:var(--ok)">CERRADA ✓</span></button>${cgente(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Reabrir escena</button></div>`;
-  return `<div class="oc2${st.done?' ok':''}${isRec(sid)?' rec':''}" id="sc-${sid}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn${isRec(sid)?' rc':''}">${isRec(sid)?'● GRABANDO':st.done?'LISTA ✓':st.sg+'/'+st.sn}</span><i style="width:${p}%"></i></button>${lines}${wrLines(sid)}<button class="recb${isRec(sid)?' on':''}" data-rc="${sid}"${ro()?' disabled':''}>${isRec(sid)?'● Grabando · tocar para quitar':'● Marcar como grabando'}</button><button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Cerrar escena</button></div>`}).join('');
+  return `<div class="oc2 rw${st.done?' ok':''}${isRec(sid)?' rec':''}" id="sc-${sid}"><button class="och" data-go="${sid}"><span class="id">${sid}</span><span class="ds">${sc[1]}<br><b class="dfb">${dfl(sid)}</b></span><span class="nn">${st.done?'LISTA ✓':st.sg+'/'+st.sn}</span><i style="width:${p}%"></i></button><button class="recp${isRec(sid)?' on':''}" data-rc="${sid}"${ro()?' disabled':''} title="${isRec(sid)?'Grabando: tocar para quitar':'Marcar como grabando'}">● REC</button>${lines}${wrLines(sid)}<button class="clb" data-dn="${sid}"${ro()?' disabled':''}>Cerrar escena</button></div>`}).join('');
 }
 function talentos(k){
  return rows.filter(r=>r.k===k).sort((a,b)=>(isWr(b)?1:0)-(isWr(a)?1:0)||(sortBy==='name'?a.name.localeCompare(b.name,'es'):(a.k==='t'?a.n-b.n:rows.indexOf(a)-rows.indexOf(b)))).map(r=>{
