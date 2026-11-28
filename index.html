@@ -201,6 +201,8 @@ button.stt.okb{color:var(--ok)}
 .tl.mini{display:inline-flex;align-items:center;justify-content:center;width:34px;height:28px;font-size:13px;border-width:2px;cursor:default;font-style:normal}.tl.mini.ok{border-width:3px}
 .at{font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase;padding:8px 12px 2px;border-top:1px solid var(--rule);color:var(--ink)}
 .al{list-style:none;margin:0;padding:2px 12px 8px;display:flex;flex-wrap:wrap;gap:4px 6px}.al li{font-size:13px;border:1px solid var(--rule);border-radius:99px;padding:2px 9px;background:var(--bg)}
+.sq.v.wp{background:color-mix(in srgb,var(--blue) 22%,var(--bg));border-color:var(--blue);color:var(--blue)}
+.sq.m.wp{background:color-mix(in srgb,var(--red) 20%,var(--bg));border-color:var(--red);color:var(--red)}
 </style>
 </head>
 <body>
@@ -285,7 +287,7 @@ const units=()=>rows.flatMap(r=>scs(r).map(s=>({r,s,need:r.sc[s]})));
 const tot=()=>units().reduce((a,u)=>a+u.need,0);
 /* ---- estado: una ficha por persona y, dentro, una por escena ---- */
 let sortBy='id';let S={},mode='local',sel='15',bsel='15',onlyP=false,armed=false,db=null;
-const zu=()=>({ves:0,maq:0,mic:0,t:{}});
+const zu=()=>({ves:0,maq:0,mic:0,vw:0,mw:0,t:{}});
 function doc(id){const d=S[id]||{};if(d.s)return{req:!!d.req,s:d.s};
  const r=byId[id],o={req:!!d.req,s:{}};
  if(d.ves||d.maq||d.mic){const f=scs(r)[0];if(f)o.s[f]={ves:d.ves||0,maq:d.maq||0,mic:d.mic||0,t:d.t||{}}}
@@ -309,8 +311,10 @@ function act(id,sid,a){
  const off=x=>{x.mic=0;x.t=x.t||{};delete x.t.mic};
  if(a==='req'){u.rq=!reqU(id,sid);if(!u.rq)off(u)}
  else if(a==='reqall'){const ss=scs(r),on=!ss.every(x=>reqU(id,x));ss.forEach(x=>{const y=d.s[x]=d.s[x]?{...zu(),...d.s[x]}:zu();y.rq=on;if(!on)off(y)})}
- else if(a==='all'){if(luU(r,sid)>=T){u.ves=0;u.maq=0;u.mic=0;u.t={}}else{u.ves=Math.max(u.ves,T);u.maq=Math.max(u.maq,T);u.t.ves=u.t.ves||s;u.t.maq=u.t.maq||s;if(reqU(id,sid)){u.mic=Math.max(u.mic,T);u.t.mic=u.t.mic||s}}}
+ else if(a==='all'){if(luU(r,sid)>=T){u.ves=0;u.maq=0;u.vw=0;u.mw=0;u.mic=0;u.t={}}else{u.vw=0;u.mw=0;u.ves=Math.max(u.ves,T);u.maq=Math.max(u.maq,T);u.t.ves=u.t.ves||s;u.t.maq=u.t.maq||s;if(reqU(id,sid)){u.mic=Math.max(u.mic,T);u.t.mic=u.t.mic||s}}}
  else if(a==='mic'&&u.mic>=T){u.rq=false;off(u)}
+ else if(r.k==='t'&&(a==='ves'||a==='maq')){const w=a==='ves'?'vw':'mw',n=u[a]||0;
+  if(n>=T){u[a]=0;u[w]=0;delete u.t[a]}else if(u[w]){u[w]=0;u[a]=T;u.t[a]=s}else{u[w]=1}}
  else{const n=u[a]||0;u[a]=n>=T?0:n+1;if(u[a]>0)u.t[a]=s;else delete u.t[a]}
  write(id,d);
 }
@@ -358,10 +362,11 @@ function bank(){
  return `<div class="ph" style="margin-top:18px"><div><h2 style="margin:0">Escena ${bsel}</h2><div class="who">${sc[1]} · <b class="dfb">${dfl(sc[0])}</b></div></div></div>`+
  rows.filter(r=>r.k==='x').map(r=>`<div class="bk"><div><b>${r.name}</b><div class="who">${r.qty} en set</div></div><div class="bkc"><small>Necesita en la ${bsel}</small>${st(r.id,'n',r.scAll[bsel]||0)}</div><div class="bkc"><small>Disponibles</small>${st(r.id,'q',r.qty)}</div></div>`).join('');
 }
-const sqb=(r,sid,f)=>{const T=r.sc[sid],n=getU(r.id,sid)[f],done=n>=T,part=n>0&&!done,lab=f==='ves'?'V':f==='maq'?'M':'Mic';
- return `<button class="sq ${f==='ves'?'v':f==='maq'?'m':'x'}${done?' on':part?' part':''}" data-a="${f}" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''}>${done||T===1?lab:n+'/'+T}</button>`};
+const wipU=(r,sid,f)=>{const u=getU(r.id,sid),w=f==='ves'?u.vw:f==='maq'?u.mw:0;return r.k==='t'&&!!w&&u[f]<r.sc[sid]};
+const sqb=(r,sid,f)=>{const T=r.sc[sid],n=getU(r.id,sid)[f],done=n>=T,part=n>0&&!done,wp=wipU(r,sid,f),lab=f==='ves'?'V':f==='maq'?'M':'Mic';
+ return `<button class="sq ${f==='ves'?'v':f==='maq'?'m':'x'}${done?' on':wp?' wp':part?' part':''}" data-a="${f}" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''}>${done||T===1?lab:n+'/'+T}</button>`};
 const sqs=(r,sid)=>sqb(r,sid,'ves')+sqb(r,sid,'maq')+(reqU(r.id,sid)?sqb(r,sid,'mic'):`<button class="sq x ghost" data-a="req" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''} title="Activar micrófono">Mic</button>`);
-const stb=(r,sid)=>{const T=r.sc[sid],l=luU(r,sid),ok=l>=T;return `<button class="stt${ok?' okb':''}" data-a="all" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''}>${ok?'LISTO':(T>1?l+'/'+T:'falta')}</button>`};
+const stb=(r,sid)=>{const T=r.sc[sid],l=luU(r,sid),ok=l>=T;return `<button class="stt${ok?' okb':''}" data-a="all" data-id="${r.id}" data-sc="${sid}"${ro()?' disabled':''}>${ok?'LISTO':(T>1?l+'/'+T:(wipU(r,sid,'ves')||wipU(r,sid,'maq')?'en proceso':'falta'))}</button>`};
 const wrb=r=>ro()?'<span class="stt"></span>':`<button class="wbr${wrapN(r)>0?' on':''}" data-wrc="${r.id}">${r.qty>1?'Wrap '+wrapN(r)+'/'+r.qty:'Wrap'}</button>`;
 function wrLines(sid){return rows.filter(r=>isWr(r)&&r.scAll[sid]).map(r=>`<div class="ol cl"><span class="on1 sl"><b>${r.k==='t'?r.name:r.scAll[sid]+'× '+r.name}</b><small>${r.k==='t'?r.act:'Extras'}</small></span><span class="wtag">WRAP</span>${ro()?'':`<button class="wbr on" data-wrc="${r.id}">Quitar</button>`}</div>`).join('')}
 function cgente(sid){
@@ -396,8 +401,9 @@ function talentos(k){
 function legend(){return `<div class="lg"><b>Qué significan los colores</b>
 <em class="lgt">Casillas de cada persona</em>
 <span><i class="sq v on">V</i> Vestuario listo</span><span><i class="sq m on">M</i> Maquillaje y peluquería listo</span><span><i class="sq x on">Mic</i> Micrófono listo</span>
+<span><i class="sq v wp">V</i><i class="sq m wp">M</i> En proceso (talentos: toca una vez; otro toque = listo; otro = vuelve a blanco)</span>
 <span><i class="sq x ghost">Mic</i> No lleva micrófono en esa escena (tócalo para activarlo; otro toque lo marca listo y otro más lo apaga)</span>
-<span><i class="sq v part">1/2</i> Avance parcial (extras)</span><span><i class="sq v">V</i> Pendiente</span>
+<span><i class="sq v part">1/2</i> Avance parcial (extras)</span><span><i class="sq v">V</i> Sin empezar</span>
 <span><i class="lgo">LISTO</i> Persona con todos sus pasos hechos (fila verde)</span><span><i class="lgw2">Wrap</i> Ya terminó: deja de contar en las escenas</span>
 <em class="lgt">Números de arriba (una casilla por escena)</em>
 <span><i class="tl mini" style="--p:0%">15</i> Sin empezar</span><span><i class="tl mini" style="--p:55%">15</i> En progreso (se va llenando)</span><span><i class="tl mini ok" style="--p:100%">15</i> Lista</span><span><i class="tl mini cl">15</i> Cerrada</span>
