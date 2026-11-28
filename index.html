@@ -469,7 +469,7 @@ addEventListener('hashchange',route);route();render();
  setStatus(mode==='ro'?'Solo lectura':'En vivo · compartido',mode==='ro');
  const tm=setTimeout(()=>setStatus('Sin respuesta del servidor',1),10000);
  db.doc('cfg13c/ajustes').onSnapshot(d=>{cfg=d.exists?d.data():{need:{},qty:{}};applyCfg();render()},()=>{});
- db.collection('estado13').onSnapshot(sn=>{
+ db.collection('estado13c').onSnapshot(sn=>{
   if(!sn.metadata.fromCache){clearTimeout(tm);setStatus(mode==='ro'?'Solo lectura':'En vivo · compartido',mode==='ro')}
   const n={};sn.docs.forEach(d=>{n[d.id]=d.data()});S=n;render()
  },err=>{clearTimeout(tm);setStatus('Sin conexión compartida',1)});
